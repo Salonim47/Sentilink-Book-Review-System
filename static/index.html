@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentilink Enterprise — Book Review Sentiment Analysis &amp; Opinion Mining System</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            dark: {
+              900: '#0b0f19',
+              800: '#111827',
+              700: '#1f2937',
+              600: '#374151',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ================= TOP ENTERPRISE NAVIGATION HEADER ================= -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand / Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <i data-lucide="book-open-check" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">Sentilink Enterprise</span>
+              <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v2.0 SOA</span>
+            </div>
+            <p class="text-[11px] text-slate-400 hidden sm:block">Opinion Mining System • 3-Tier MVC Architecture • BVDU Curriculum</p>
+          </div>
+        </div>
+
+        <!-- Quick Dummy Credentials Banner (Mandatory Requirement) -->
+        <div class="hidden md:flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+          <span class="text-slate-400 font-medium flex items-center gap-1.5">
+            <i data-lucide="key-round" class="w-3.5 h-3.5 text-indigo-400"></i> Dummy Login:
+          </span>
+          <button onclick="quickLogin('admin')" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 border border-purple-500/30 transition text-[11px] font-mono">
+            Admin: admin/admin123
+          </button>
+          <button onclick="quickLogin('customer')" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 border border-emerald-500/30 transition text-[11px] font-mono">
+            Customer: customer/customer123
+          </button>
+        </div>
+
+        <!-- Role Badge & User Controls -->
+        <div class="flex items-center gap-3">
+          <div id="user-badge-container" class="flex items-center gap-2">
+            <!-- Populated dynamically by app.js -->
+          </div>
+          <button id="auth-btn" onclick="openAuthModal()" class="text-xs px-3.5 py-1.5 rounded-lg font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="log-in" class="w-3.5 h-3.5"></i> <span>Login</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Navigation Tabs (Aligned with University Mini-Project Reports & Classmate Project Modules) -->
+      <nav class="flex space-x-1 sm:space-x-3 border-t border-slate-800/60 overflow-x-auto py-2 scrollbar-none text-xs sm:text-sm font-medium">
+        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 whitespace-nowrap">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>Analytics Dashboard</span>
+        </button>
+        <button onclick="switchTab('products')" id="tab-btn-products" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 whitespace-nowrap">
+          <i data-lucide="package" class="w-4 h-4"></i>
+          <span>Product (Book) Management</span>
+        </button>
+        <button onclick="switchTab('reviews')" id="tab-btn-reviews" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 whitespace-nowrap">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          <span>Review Management</span>
+        </button>
+        <button onclick="switchTab('itpm-plan')" id="tab-btn-itpm-plan" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 whitespace-nowrap">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+          <span>ITPM Project Management</span>
+        </button>
+        <button onclick="switchTab('analytics-hub')" id="tab-btn-analytics-hub" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 whitespace-nowrap">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Advanced Graphs &amp; Lab</span>
+        </button>
+        <button onclick="switchTab('syllabus')" id="tab-btn-syllabus" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 whitespace-nowrap">
+          <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+          <span>Mini Project Reports (BVDU)</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- ================= MAIN CONTENT AREA ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: ANALYTICS DASHBOARD (MATCHING FIGURE 5.1 & FIGURE 5.2 OF REPORT)    -->
+    <!-- ========================================================================= -->
+    <section id="view-dashboard" class="tab-view space-y-6">
+      
+      <!-- Executive Banner -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl relative overflow-hidden gradient-border">
+        <div class="relative z-10 max-w-4xl">
+          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-xs font-semibold mb-3 border border-indigo-500/20">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Kaggle Goodreads &amp; Amazon Datasets • VADER Lexicon Sentiment Engine
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+            Book Review <span class="gradient-text">Sentiment &amp; Opinion Mining Dashboard</span>
+          </h1>
+          <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-4">
+            Comprehensive business intelligence across 36 literature titles. Evaluates customer reviews with aspect-based opinion mining, sentiment classification, and key performance indicators.
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="switchTab('reviews')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+              <i data-lucide="pen-tool" class="w-4 h-4"></i> Add Customer Review
+            </button>
+            <button onclick="switchTab('products')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs sm:text-sm border border-slate-700 transition flex items-center gap-2">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i> Manage Catalog
+            </button>
+            <div class="text-xs text-slate-400 flex items-center gap-1.5 ml-auto">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+              <span>Role-Based Access: Admin / Customer Segregation Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Toolbar -->
+      <div class="glass-panel p-4 rounded-xl flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="filter" class="w-3.5 h-3.5 text-indigo-400"></i> Filter Category:
+          </label>
+          <select id="dash-genre-filter" onchange="onDashboardGenreChange()" class="bg-slate-900 border border-slate-700/80 rounded-lg text-xs px-3 py-1.5 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none min-w-[200px]">
+            <option value="All">All Categories / Genres (35)</option>
+          </select>
+          <button onclick="loadDashboardData()" title="Refresh Dashboard" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-400 flex items-center gap-4">
+          <span id="dash-filter-status" class="font-mono text-indigo-300">Displaying: All 36 Books</span>
+          <span class="text-slate-600">•</span>
+          <span class="text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Live Database Connected
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS (Total Reviews, Positive, Negative, Neutral, Average Rating) -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- KPI 1: Total Reviews -->
+        <div class="glass-card p-5 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Total Reviews</span>
+            <i data-lucide="message-square-text" class="w-4 h-4 text-indigo-400"></i>
+          </div>
+          <div id="dash-kpi-total-reviews" class="text-2xl sm:text-3xl font-black text-white">123</div>
+          <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+            <span class="text-indigo-400 font-semibold" id="dash-kpi-books-count">36 Products</span> in catalog
+          </div>
+        </div>
+
+        <!-- KPI 2: Positive Reviews -->
+        <div class="glass-card p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/10">
+          <div class="flex items-center justify-between text-emerald-300 text-xs mb-1">
+            <span>Positive Reviews</span>
+            <i data-lucide="thumbs-up" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div id="dash-kpi-positive-reviews" class="text-2xl sm:text-3xl font-black text-emerald-400">88</div>
+          <div class="text-[11px] text-emerald-400/80 mt-1 font-mono" id="dash-kpi-positive-pct">
+            71.5% of total
+          </div>
+        </div>
+
+        <!-- KPI 3: Negative Reviews -->
+        <div class="glass-card p-5 rounded-xl border border-rose-500/20 bg-rose-950/10">
+          <div class="flex items-center justify-between text-rose-300 text-xs mb-1">
+            <span>Negative Reviews</span>
+            <i data-lucide="thumbs-down" class="w-4 h-4 text-rose-400"></i>
+          </div>
+          <div id="dash-kpi-negative-reviews" class="text-2xl sm:text-3xl font-black text-rose-400">18</div>
+          <div class="text-[11px] text-rose-400/80 mt-1 font-mono" id="dash-kpi-negative-pct">
+            14.6% of total
+          </div>
+        </div>
+
+        <!-- KPI 4: Neutral Reviews -->
+        <div class="glass-card p-5 rounded-xl border border-amber-500/20 bg-amber-950/10">
+          <div class="flex items-center justify-between text-amber-300 text-xs mb-1">
+            <span>Neutral Reviews</span>
+            <i data-lucide="minus-circle" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div id="dash-kpi-neutral-reviews" class="text-2xl sm:text-3xl font-black text-amber-400">17</div>
+          <div class="text-[11px] text-amber-400/80 mt-1 font-mono" id="dash-kpi-neutral-pct">
+            13.9% of total
+          </div>
+        </div>
+
+        <!-- KPI 5: Average Rating & CSAT -->
+        <div class="glass-card p-5 rounded-xl border border-purple-500/20 bg-purple-950/10 col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between text-purple-300 text-xs mb-1">
+            <span>Average Rating</span>
+            <i data-lucide="star" class="w-4 h-4 text-amber-400 fill-amber-400"></i>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="dash-kpi-avg-rating" class="text-2xl sm:text-3xl font-black text-white">4.2</span>
+            <span class="text-xs text-slate-400">/ 5.0</span>
+          </div>
+          <div class="text-[11px] text-purple-300 mt-1 font-mono">
+            CSAT Index: <span id="dash-kpi-csat" class="font-bold text-emerald-400">71.5%</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CORE CHARTS: FIGURE 5.1 & FIGURE 5.2 -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- FIGURE 5.1: PRODUCT-WISE SENTIMENT ANALYSIS (BAR CHART) -->
+        <div class="lg:col-span-7 glass-panel p-5 sm:p-6 rounded-2xl border border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">Figure 5.1</span>
+                <h3 class="text-base font-bold text-white">Product-wise Sentiment Analysis</h3>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">
+                Comparative bar chart illustrating Positive vs Negative review counts per literature title.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono">
+              <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded bg-emerald-500 inline-block"></span> Positive</span>
+              <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></span> Negative</span>
+            </div>
+          </div>
+
+          <div class="h-80 relative">
+            <canvas id="figure-5-1-chart"></canvas>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>*Polarity Threshold: Compound Score $\ge +0.05$ (Positive), $\le -0.05$ (Negative).</span>
+            <span class="text-indigo-400 font-mono">Unit II Predictive Sentiment</span>
+          </div>
+        </div>
+
+        <!-- FIGURE 5.2: CUSTOMER OPINION / ASPECT ANALYSIS (HORIZONTAL BAR CHART) -->
+        <div class="lg:col-span-5 glass-panel p-5 sm:p-6 rounded-2xl border border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono">Figure 5.2</span>
+                <h3 class="text-base font-bold text-white">Customer Opinion / Aspect Analysis</h3>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">
+                Frequency distribution of reader opinions across 10 literature domain aspects.
+              </p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 font-mono">10 Aspects</span>
+          </div>
+
+          <div class="h-80 relative">
+            <canvas id="figure-5-2-chart"></canvas>
+          </div>
+
+          <div class="mt-3 pt-3 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>*Extracted via Aspect-Based Opinion Mining (Elective IV B Unit II).</span>
+            <span class="text-purple-400 font-mono">ASTMA Module</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SUMMARY HIGHLIGHTS ROW -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Rating Breakdown Bar Meters -->
+        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="star" class="w-4 h-4 text-amber-400"></i> Star Rating Distribution
+          </h4>
+          <div id="dash-rating-bars" class="space-y-2 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Top Acclaimed Books -->
+        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i> Top Acclaimed Literature
+          </h4>
+          <div id="dash-top-books" class="space-y-2.5 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Top Mentioned Aspects -->
+        <div class="glass-panel p-5 rounded-xl border border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i> Key Opinion Dimensions
+          </h4>
+          <div id="dash-top-aspects" class="space-y-2.5 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: PRODUCT (BOOK) MANAGEMENT (ERP MATERIALS & CATALOG MODULE)          -->
+    <!-- ========================================================================= -->
+    <section id="view-products" class="tab-view hidden space-y-6">
+      
+      <!-- Management Header Banner -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-xs font-semibold mb-2 border border-emerald-500/20">
+              <i data-lucide="package" class="w-3.5 h-3.5"></i> Enterprise Systems Unit II • ERP Materials &amp; Master Data Module
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Product (Book) Management</h2>
+            <p class="text-xs sm:text-sm text-slate-400">
+              Maintain the product catalog, add new books, configure prices, and review aggregated opinion metrics.
+            </p>
+          </div>
+          <button onclick="toggleAddProductForm()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-md transition flex items-center gap-2 self-start md:self-auto">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add New Product (Book)
+          </button>
+        </div>
+      </div>
+
+      <!-- Add New Product Form (Collapsible / Toggleable) -->
+      <div id="add-product-container" class="glass-panel p-6 rounded-2xl border border-slate-800">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+            <h3 class="text-base font-bold text-white">Add New Book to Master Catalogue</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium">Quick Prefill:</span>
+            <button onclick="prefillProductForm('scifi')" class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 hover:bg-indigo-500/25 border border-indigo-500/30 text-[11px] transition">
+              ⚡ Sci-Fi Novel
+            </button>
+            <button onclick="prefillProductForm('tech')" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 border border-purple-500/30 text-[11px] transition">
+              ⚡ Tech Handbook
+            </button>
+          </div>
+        </div>
+
+        <form id="add-product-form" onsubmit="handleCreateProduct(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Product / Book Title <span class="text-rose-400">*</span></label>
+            <input type="text" id="add-prod-title" required placeholder="e.g. Design Patterns in Python" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Brand / Author <span class="text-rose-400">*</span></label>
+            <input type="text" id="add-prod-author" required placeholder="e.g. Erich Gamma &amp; Richard Helm" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Category / Genre <span class="text-rose-400">*</span></label>
+            <input type="text" id="add-prod-genre" required placeholder="e.g. Software Architecture" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">ISBN Number <span class="text-rose-400">*</span></label>
+            <input type="text" id="add-prod-isbn" required placeholder="978-0201633610" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Price ($ / ₹) <span class="text-rose-400">*</span></label>
+            <input type="number" step="0.01" id="add-prod-price" required value="29.99" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Publication Year <span class="text-rose-400">*</span></label>
+            <input type="number" id="add-prod-year" required value="2025" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-slate-400 mb-1 font-medium">Cover Image URL</label>
+            <input type="url" id="add-prod-cover" required value="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Page Count</label>
+            <input type="number" id="add-prod-pages" required value="384" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+
+          <div class="md:col-span-3">
+            <label class="block text-slate-400 mb-1 font-medium">Description</label>
+            <textarea id="add-prod-desc" rows="2" required placeholder="Comprehensive book description, premise, and target audience..." class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+          </div>
+
+          <div class="md:col-span-3 flex justify-end gap-3 pt-2">
+            <button type="button" onclick="document.getElementById('add-product-form').reset()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+              Reset Form
+            </button>
+            <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md transition flex items-center gap-2">
+              <i data-lucide="check" class="w-4 h-4"></i> Save Product to Database
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Product Catalogue Table (Figure 5.x Component) -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="database" class="w-4 h-4 text-indigo-400"></i> Master Product Catalogue Table
+            </h3>
+            <p class="text-xs text-slate-400">All registered book items with pricing, category tags, ratings, and action controls.</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="relative w-48 sm:w-64">
+              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input type="text" id="prod-search-input" oninput="onProductSearchInput()" placeholder="Search title or author..." class="w-full pl-8 pr-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <select id="prod-genre-filter" onchange="onProductGenreFilterChange()" class="bg-slate-900 border border-slate-700 rounded-lg text-xs px-2.5 py-1.5 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="All">All Categories</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 max-h-[500px]">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider sticky top-0">
+              <tr>
+                <th class="py-3 px-3">ID</th>
+                <th class="py-3 px-3">Cover</th>
+                <th class="py-3 px-3">Product Name (Book Title)</th>
+                <th class="py-3 px-3">Brand (Author)</th>
+                <th class="py-3 px-3">Category (Genre)</th>
+                <th class="py-3 px-3">Price</th>
+                <th class="py-3 px-3">Rating</th>
+                <th class="py-3 px-3 text-center">Reviews</th>
+                <th class="py-3 px-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="product-catalogue-tbody" class="divide-y divide-slate-800 text-[11px]">
+              <!-- Dynamically populated via app.js -->
+              <tr><td colspan="9" class="p-6 text-center text-slate-500">Loading product catalogue...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+          <span id="product-count-badge">Showing 36 products</span>
+          <span class="text-[11px]">Click 'View Details' on any book to see its sentiment breakdown &amp; aspect scores.</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: REVIEW MANAGEMENT (MATCHING FIGURE 5.3 STORED REVIEWS TABLE)        -->
+    <!-- ========================================================================= -->
+    <section id="view-reviews" class="tab-view hidden space-y-6">
+      
+      <!-- Review Module Header -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-semibold mb-2 border border-purple-500/20">
+          <i data-lucide="message-square" class="w-3.5 h-3.5"></i> ASTMA Module • VADER Sentiment Analysis &amp; Aspect Mining
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold text-white">Review Management &amp; Customer Opinion Mining</h2>
+        <p class="text-xs sm:text-sm text-slate-400">
+          Add new reviews with real-time NLP inference, inspect stored customer opinions, and analyze aspect labels across all products.
+        </p>
+      </div>
+
+      <!-- Add Review Interactive Card (with Live NLP Feedback) -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i>
+            <h3 class="text-base font-bold text-white">Add Customer Review (with Real-Time NLP Scoring)</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium">Quick Samples:</span>
+            <button onclick="fillSampleReview('positive')" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] transition">
+              ⭐ Masterpiece
+            </button>
+            <button onclick="fillSampleReview('mixed')" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border border-amber-500/30 text-[11px] transition">
+              ⚖️ Mixed
+            </button>
+            <button onclick="fillSampleReview('negative')" class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 border border-rose-500/30 text-[11px] transition">
+              💔 Harsh Critique
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left: Input Controls -->
+          <div class="lg:col-span-7 space-y-4">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div class="sm:col-span-2">
+                <label class="block text-slate-400 mb-1 font-medium">Target Product (Book) <span class="text-rose-400">*</span></label>
+                <select id="review-book-select" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <!-- Filled dynamically via app.js -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 font-medium">Rating <span class="text-rose-400">*</span></label>
+                <select id="review-rating-select" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-amber-400 font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="5">★★★★★ (5 Stars)</option>
+                  <option value="4">★★★★☆ (4 Stars)</option>
+                  <option value="3">★★★☆☆ (3 Stars)</option>
+                  <option value="2">★★☆☆☆ (2 Stars)</option>
+                  <option value="1">★☆☆☆☆ (1 Star)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1 font-medium text-xs">Customer Name</label>
+              <input type="text" id="review-author-name" value="Customer" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="relative">
+              <label class="block text-slate-400 mb-1 font-medium text-xs">Customer Review Text <span class="text-rose-400">*</span></label>
+              <textarea id="live-nlp-input" rows="4" oninput="onLiveNLPInput()" placeholder="Type customer review text here... Sentiment and aspects will be analyzed dynamically." class="w-full p-3 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none leading-relaxed font-sans placeholder-slate-500"></textarea>
+              <div class="absolute bottom-2.5 right-3 text-[10px] text-slate-500 font-mono" id="live-char-count">0 characters</div>
+            </div>
+
+            <button onclick="submitReviewFromLab()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i> Submit Review to Database
+            </button>
+
+          </div>
+
+          <!-- Right: Real-time Live NLP Diagnostic Preview Card -->
+          <div class="lg:col-span-5 space-y-3">
+            
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 uppercase tracking-wider font-semibold">Predicted Sentiment</span>
+                <span id="live-confidence-badge" class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] border border-slate-700">Confidence: 0%</span>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <div id="live-verdict-icon" class="w-10 h-10 rounded-lg flex items-center justify-center bg-slate-800 text-slate-400 text-xl font-bold">
+                  —
+                </div>
+                <div>
+                  <div id="live-verdict-text" class="text-lg font-extrabold text-slate-200">Awaiting input...</div>
+                  <div id="live-dominant-emotion" class="text-xs text-slate-400">Dominant Emotion: Neutral</div>
+                </div>
+              </div>
+
+              <!-- Polarity Bar -->
+              <div class="space-y-1 text-xs pt-1 border-t border-slate-800">
+                <div class="flex justify-between text-slate-400 text-[11px]">
+                  <span>VADER Polarity Score</span>
+                  <span id="live-polarity-val" class="font-mono text-slate-200">0.00</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden flex">
+                  <div id="live-polarity-bar-neg" class="h-full bg-rose-500 transition-all duration-200" style="width: 50%;"></div>
+                  <div id="live-polarity-bar-pos" class="h-full bg-emerald-500 transition-all duration-200" style="width: 50%;"></div>
+                </div>
+              </div>
+
+              <!-- Detected Aspects -->
+              <div class="pt-2 border-t border-slate-800">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Detected Opinion Aspects:</div>
+                <div id="live-aspects-container" class="flex flex-wrap gap-1 min-h-[28px] items-center">
+                  <span class="text-[11px] text-slate-500 italic">None detected yet.</span>
+                </div>
+              </div>
+
+              <!-- RAKE Keywords -->
+              <div class="pt-2 border-t border-slate-800">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">RAKE Candidate Keywords:</div>
+                <div id="live-rake-keywords" class="flex flex-wrap gap-1 min-h-[28px] items-center">
+                  <span class="text-[11px] text-slate-500 italic">None extracted yet.</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FIGURE 5.3: STORED REVIEWS TABLE -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono">Figure 5.3</span>
+              <h3 class="text-base font-bold text-white">Stored Reviews</h3>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Persistent reviews with product name, brand/author, category, rating, review text, sentiment classification, polarity score, and aspect tags.
+            </p>
+          </div>
+
+          <!-- Multi-filter Toolbar -->
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="stored-filter-genre" onchange="filterStoredReviews()" class="bg-slate-900 border border-slate-700 rounded-lg text-xs px-2.5 py-1.5 text-slate-200">
+              <option value="All">All Categories</option>
+            </select>
+            <select id="stored-filter-rating" onchange="filterStoredReviews()" class="bg-slate-900 border border-slate-700 rounded-lg text-xs px-2.5 py-1.5 text-slate-200">
+              <option value="">All Ratings</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+            <select id="stored-filter-sentiment" onchange="filterStoredReviews()" class="bg-slate-900 border border-slate-700 rounded-lg text-xs px-2.5 py-1.5 text-slate-200">
+              <option value="All">All Sentiments</option>
+              <option value="Positive">Positive</option>
+              <option value="Neutral">Neutral</option>
+              <option value="Negative">Negative</option>
+            </select>
+            <button onclick="loadStoredReviewsTable()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Refresh Reviews">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container matching Saumya Figure 5.3 -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 max-h-[550px]">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider sticky top-0">
+              <tr>
+                <th class="py-3 px-3">Review ID</th>
+                <th class="py-3 px-3">Product Name</th>
+                <th class="py-3 px-3">Brand / Author</th>
+                <th class="py-3 px-3">Category</th>
+                <th class="py-3 px-3">Rating</th>
+                <th class="py-3 px-3 min-w-[280px]">Review Text</th>
+                <th class="py-3 px-3">Sentiment</th>
+                <th class="py-3 px-3 font-mono">Score</th>
+                <th class="py-3 px-3 min-w-[160px]">Aspects Detected</th>
+                <th class="py-3 px-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="stored-reviews-tbody" class="divide-y divide-slate-800 text-[11px]">
+              <!-- Dynamically rendered via app.js -->
+              <tr><td colspan="10" class="p-6 text-center text-slate-500">Loading stored customer reviews...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+          <span id="stored-reviews-count-badge">Showing 123 stored reviews</span>
+          <span class="text-[11px] font-mono text-purple-300">Figure 5.3: Stored Reviews Table verified</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: ITPM PROJECT MANAGEMENT (MATCHING FIGURE 5.1 & 5.2 OF ITPM REPORT) -->
+    <!-- ========================================================================= -->
+    <section id="view-itpm-plan" class="tab-view hidden space-y-6">
+      
+      <!-- Project Overview Header Card -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 gradient-border">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 text-xs font-semibold mb-2 border border-indigo-500/20">
+              <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> IT Project Management Governance (ITPM)
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Smart Book Review Management &amp; Opinion Analytics System
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">
+              Project Plan, Schedule, Costing, Risk Register, and Resource Management matching BVDU university specifications.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-indigo-300">16 Weeks Duration</span>
+            <span class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-emerald-300">Total Budget: ₹55,000</span>
+            <span class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-300">Role: Project Manager</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+          <div>
+            <span class="text-slate-400">Project Manager</span>
+            <div class="font-bold text-white mt-0.5">Lead Project Manager</div>
+          </div>
+          <div>
+            <span class="text-slate-400">Integrated Modules</span>
+            <div class="font-bold text-white mt-0.5">ES + ITPM + ASTMA</div>
+          </div>
+          <div>
+            <span class="text-slate-400">Target Tech Stack</span>
+            <div class="font-bold text-white mt-0.5">Python + SQLite + FastAPI</div>
+          </div>
+          <div>
+            <span class="text-slate-400">Delivery Status</span>
+            <div class="font-bold text-emerald-400 mt-0.5 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> All Phases Completed
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FIGURE 5.1 (ITPM): WORK BREAKDOWN STRUCTURE (WBS) -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">Figure 5.1</span>
+              <h3 class="text-base font-bold text-white">Work Breakdown Structure (WBS)</h3>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Hierarchical decomposition of the project into 6 manageable execution phases.</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 font-mono">6 Phases • 16 Deliverables</span>
+        </div>
+
+        <div id="itpm-wbs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamically populated via app.js -->
+        </div>
+      </div>
+
+      <!-- FIGURE 5.2 (ITPM): 16-WEEK SCHEDULE TABLE -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono">Figure 5.2</span>
+              <h3 class="text-base font-bold text-white">16-Week Schedule Table &amp; Timeline</h3>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Chronological execution timetable across Week 1 through Week 16 with completion status.</p>
+          </div>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">100% Milestones Met</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="py-2.5 px-3">Activity No</th>
+                <th class="py-2.5 px-3">Activity Description</th>
+                <th class="py-2.5 px-3">Allocated Weeks</th>
+                <th class="py-2.5 px-3">Gantt Progress Bar</th>
+                <th class="py-2.5 px-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="itpm-schedule-tbody" class="divide-y divide-slate-800 text-[11px]">
+              <!-- Dynamically populated via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COST ESTIMATION (₹55,000) & RISK REGISTER ROW -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Cost Estimation Breakdown (₹55,000) -->
+        <div class="lg:col-span-5 glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="indian-rupee" class="w-4 h-4 text-emerald-400"></i> Cost Estimation Breakdown
+              </h3>
+              <p class="text-xs text-slate-400">Total Project Budget: ₹55,000 across 5 cost heads.</p>
+            </div>
+            <span class="text-sm font-extrabold text-emerald-400 font-mono">₹55,000</span>
+          </div>
+
+          <!-- Stacked Budget Meter -->
+          <div class="space-y-1">
+            <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden flex">
+              <div style="width: 45.5%;" class="bg-indigo-500" title="Software Development 45.5%"></div>
+              <div style="width: 18.2%;" class="bg-purple-500" title="Database & Cloud 18.2%"></div>
+              <div style="width: 14.5%;" class="bg-amber-500" title="Testing & QA 14.5%"></div>
+              <div style="width: 9.1%;" class="bg-emerald-500" title="Documentation 9.1%"></div>
+              <div style="width: 12.7%;" class="bg-rose-500" title="Miscellaneous 12.7%"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-500 font-mono pt-1">
+              <span>₹0</span>
+              <span>₹27,500 (50%)</span>
+              <span>₹55,000 (100%)</span>
+            </div>
+          </div>
+
+          <!-- Cost Table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px]">
+                <tr>
+                  <th class="py-2 px-3">Cost Component</th>
+                  <th class="py-2 px-3 font-mono">Amount (₹)</th>
+                  <th class="py-2 px-3 font-mono text-right">Share (%)</th>
+                </tr>
+              </thead>
+              <tbody id="itpm-cost-tbody" class="divide-y divide-slate-800 text-[11px] text-slate-300">
+                <!-- Dynamically populated via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Project Risk Register (6 Identified Risks) -->
+        <div class="lg:col-span-7 glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Project Risk Register
+              </h3>
+              <p class="text-xs text-slate-400">Risk identification, probability, impact, and mitigation strategies.</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">6 Risks Managed</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 max-h-72">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] sticky top-0">
+                <tr>
+                  <th class="py-2 px-2.5">No</th>
+                  <th class="py-2 px-2.5">Risk Description</th>
+                  <th class="py-2 px-2.5">Prob.</th>
+                  <th class="py-2 px-2.5">Impact</th>
+                  <th class="py-2 px-2.5">Mitigation Strategy</th>
+                </tr>
+              </thead>
+              <tbody id="itpm-risk-tbody" class="divide-y divide-slate-800 text-[11px]">
+                <!-- Dynamically populated via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RESOURCE PLAN & MILESTONES ROW -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Resource Allocation Plan -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-800">
+            <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i> Resource Allocation Plan (6 Team Roles)
+          </h3>
+          <div id="itpm-resources-container" class="space-y-2 text-xs">
+            <!-- Loaded via app.js -->
+          </div>
+        </div>
+
+        <!-- 7 Key Milestones Checklist -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-800">
+            <i data-lucide="flag" class="w-4 h-4 text-emerald-400"></i> Project Milestones (7 Key Milestones)
+          </h3>
+          <div id="itpm-milestones-container" class="space-y-2 text-xs">
+            <!-- Loaded via app.js -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- AGILE SCRUM KANBAN & PERT/CPM SCHEDULER (ADVANCED ITPM GOVERNANCE) -->
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
+        
+        <!-- PERT / CPM Critical Path Scheduler Card -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="git-branch" class="w-4 h-4 text-indigo-400"></i> PERT / CPM Critical Path Analysis (ITPM Unit II &amp; III)
+              </h3>
+              <p class="text-xs text-slate-400">
+                Calculates Expected Duration $t_e = (a + 4m + b)/6$, Activity Variance, and the Critical Path for project governance.
+              </p>
+            </div>
+            <div id="pert-summary-badge" class="px-3 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-mono">
+              Critical Path Duration: 27 Days
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 mb-2">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-3">Code</th>
+                  <th class="py-2.5 px-3">Activity Name</th>
+                  <th class="py-2.5 px-3">Predecessors</th>
+                  <th class="py-2.5 px-3">Opt (a)</th>
+                  <th class="py-2.5 px-3">Likely (m)</th>
+                  <th class="py-2.5 px-3">Pess (b)</th>
+                  <th class="py-2.5 px-3 font-semibold text-indigo-400">Expected (te)</th>
+                  <th class="py-2.5 px-3">Variance</th>
+                  <th class="py-2.5 px-3">Critical Path</th>
+                </tr>
+              </thead>
+              <tbody id="pert-table-body" class="divide-y divide-slate-800 font-mono text-[11px]">
+                <!-- Loaded via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Agile Scrum Kanban Board -->
+        <div class="pt-4 border-t border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="kanban" class="w-4 h-4 text-purple-400"></i> Agile Scrum Sprint Board (ITPM Unit V)
+              </h3>
+              <p class="text-xs text-slate-400">
+                Track sprint backlog items, story points, and task statuses across engineering roles.
+              </p>
+            </div>
+            <button onclick="loadScrumBoard()" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition flex items-center gap-1.5">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh Board
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Backlog -->
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="flex items-center justify-between mb-3 text-xs font-semibold text-slate-400">
+                <span>Product Backlog</span>
+                <span id="col-count-backlog" class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px]">0</span>
+              </div>
+              <div id="scrum-col-backlog" class="space-y-2 min-h-[140px]"></div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="flex items-center justify-between mb-3 text-xs font-semibold text-indigo-400">
+                <span>In Progress</span>
+                <span id="col-count-in_progress" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-[10px]">0</span>
+              </div>
+              <div id="scrum-col-in_progress" class="space-y-2 min-h-[140px]"></div>
+            </div>
+
+            <!-- Sprint Review / QA -->
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="flex items-center justify-between mb-3 text-xs font-semibold text-amber-400">
+                <span>Sprint Review / QA</span>
+                <span id="col-count-review" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-[10px]">0</span>
+              </div>
+              <div id="scrum-col-review" class="space-y-2 min-h-[140px]"></div>
+            </div>
+
+            <!-- Done -->
+            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+              <div class="flex items-center justify-between mb-3 text-xs font-semibold text-emerald-400">
+                <span>Completed (Done)</span>
+                <span id="col-count-done" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[10px]">0</span>
+              </div>
+              <div id="scrum-col-done" class="space-y-2 min-h-[140px]"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: ADVANCED GRAPHS & STUDENT LAB (ASTMA & ES ADVANCED MODELS)           -->
+    <!-- ========================================================================= -->
+    <section id="view-analytics-hub" class="tab-view hidden space-y-6">
+      
+      <!-- Student Theory & Formula Master Banner -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 gradient-border">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 text-xs font-semibold mb-2 border border-purple-500/20">
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> University Elective Curriculum Deep Dive
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Advanced <span class="gradient-text">Visual Analytics &amp; Student Lab</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl mt-1 leading-relaxed">
+              Explore mathematical models, machine learning clustering, social network graph centrality, web clickstream funnels, and enterprise ERP financial appraisals through interactive multi-bar and line charts.
+            </p>
+          </div>
+          <button onclick="loadAnalyticsHubData()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition flex items-center gap-2 self-start lg:self-center">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Recompute All Models
+          </button>
+        </div>
+
+        <!-- Student Formula Chips -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-3 border-t border-slate-800/80 font-mono text-[11px]">
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="text-indigo-400 font-semibold mb-0.5">PERT Expected Duration</div>
+            <div class="text-slate-300">te = (a + 4m + b) / 6</div>
+            <div class="text-[10px] text-slate-500">3-Point Beta Distribution</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="text-rose-400 font-semibold mb-0.5">Activity Crash Slope</div>
+            <div class="text-slate-300">S = (Cc - Cn) / (Tn - Tc)</div>
+            <div class="text-[10px] text-slate-500">Cost per Day Crashing</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="text-purple-400 font-semibold mb-0.5">RAKE Candidate Score</div>
+            <div class="text-slate-300">Score(w) = deg(w) / freq(w)</div>
+            <div class="text-[10px] text-slate-500">Co-occurrence Matrix</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="text-emerald-400 font-semibold mb-0.5">Apriori Rule Lift</div>
+            <div class="text-slate-300">Lift = Conf(A→B) / Supp(B)</div>
+            <div class="text-[10px] text-slate-500">Itemset Association &gt; 1.0</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800">
+            <div class="text-amber-400 font-semibold mb-0.5">Network Centrality</div>
+            <div class="text-slate-300">Cd(v) = deg(v) / (N - 1)</div>
+            <div class="text-[10px] text-slate-500">Social Graph Degree Ratio</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 1: GENRE SENTIMENT MULTI-BAR CHART & RATING CORRELATION -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Multi-Bar Chart: Sentiment by Literary Genre -->
+        <div class="lg:col-span-7 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i> Multi-Bar Chart: Sentiment by Literary Genre
+              </h3>
+              <p class="text-[11px] text-slate-400">Compares Positive (Green), Neutral (Amber), and Negative (Rose) review counts across genres.</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono">Unit II Analytics</span>
+          </div>
+          <div class="h-72">
+            <canvas id="genre-sentiment-bar-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Star Rating vs Sentiment Polarity Correlation -->
+        <div class="lg:col-span-5 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i> Star Rating vs Sentiment Polarity Correlation
+              </h3>
+              <p class="text-[11px] text-slate-400">Validates that 5★ reviews correspond with high compound polarity [-1 to +1].</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-mono">Unit I/II Model</span>
+          </div>
+          <div class="h-72">
+            <canvas id="rating-correlation-bar-chart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 2: TOPIC CLUSTERING & ASSOCIATION RULE MINING -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Topic Clustering Lab (K-Means K=4) -->
+        <div class="lg:col-span-6 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="boxes" class="w-4 h-4 text-purple-400"></i> Topic Detection &amp; Clustering (K-Means K=4)
+              </h3>
+              <p class="text-[11px] text-slate-400">Elective IV B Unit II: Unsupervised discovery of latent semantic themes across review texts.</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 font-mono">TF-IDF Space</span>
+          </div>
+          <div id="topic-clusters-container" class="space-y-3 pt-2">
+            <div class="text-xs text-slate-500 text-center py-6">Loading semantic topic clusters...</div>
+          </div>
+        </div>
+
+        <!-- Association Rule Mining (Apriori Algorithm) -->
+        <div class="lg:col-span-6 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="git-commit" class="w-4 h-4 text-amber-400"></i> Association Rule Mining (Apriori Algorithm)
+              </h3>
+              <p class="text-[11px] text-slate-400">Elective IV B Course Outcome 5: Discovers frequent itemsets between Aspects, Ratings &amp; Emotions.</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono">Support &amp; Lift</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 max-h-72">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] sticky top-0">
+                <tr>
+                  <th class="py-2 px-3">Antecedent (If)</th>
+                  <th class="py-2 px-3">Consequent (Then)</th>
+                  <th class="py-2 px-3 font-mono">Support</th>
+                  <th class="py-2 px-3 font-mono">Confidence</th>
+                  <th class="py-2 px-3 font-mono text-amber-400">Lift</th>
+                </tr>
+              </thead>
+              <tbody id="association-rules-tbody" class="divide-y divide-slate-800 text-[11px]">
+                <tr><td colspan="5" class="p-4 text-center text-slate-500">Mining association rules...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 3: SOCIAL NETWORK ANALYSIS & WEB CLICKSTREAM FUNNEL -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Social Network Analysis & Graph Visualizer -->
+        <div class="lg:col-span-7 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="share-2" class="w-4 h-4 text-cyan-400"></i> Social Network Graph &amp; Centrality Measures (Unit V &amp; VI)
+              </h3>
+              <p class="text-[11px] text-slate-400">Bipartite interaction graph connecting readers (cyan circles) to books (purple squares).</p>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 font-mono">Community Graphs</span>
+          </div>
+          
+          <div class="relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden h-72 flex items-center justify-center">
+            <canvas id="social-network-canvas" width="600" height="288" class="w-full h-full"></canvas>
+            <div class="absolute bottom-2 left-2 text-[10px] text-slate-500 font-mono bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+              ● Reader Nodes &nbsp; ■ Book Hubs &nbsp; ── Reviews
+            </div>
+          </div>
+
+          <div id="social-network-metrics" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-800 text-xs text-center">
+            <!-- Loaded via app.js -->
+          </div>
+        </div>
+
+        <!-- Web Analytics & A/B Testing Simulator -->
+        <div class="lg:col-span-5 glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-pink-400"></i> Web Analytics &amp; A/B Testing (Unit IV)
+                </h3>
+                <p class="text-[11px] text-slate-400">Conversion funnel clickstream &amp; randomized experiment metrics.</p>
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 font-mono">Clickstream</span>
+            </div>
+
+            <!-- Clickstream Funnel -->
+            <div id="clickstream-funnel-container" class="space-y-2 mb-4">
+              <!-- Loaded via app.js -->
+            </div>
+
+            <!-- A/B Experiment Card -->
+            <div id="ab-test-card" class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-2">
+              <!-- Loaded via app.js -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 4: ENTERPRISE FINANCIALS & ITPM GOVERNANCE -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- ERP 5-Year Total Cost of Ownership (COTS vs Bespoke) -->
+        <div class="lg:col-span-4 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400"></i> ERP Software Acquisition (TCO)
+              </h3>
+              <p class="text-[11px] text-slate-400">Unit V: COTS vs Bespoke 5-year cumulative cost comparison.</p>
+            </div>
+          </div>
+          <div class="h-56">
+            <canvas id="erp-tco-chart"></canvas>
+          </div>
+          <div class="mt-2 text-[10px] text-slate-400 leading-tight">
+            *Bespoke architecture breaks even at Year 3.8 due to elimination of recurring seat licensing.
+          </div>
+        </div>
+
+        <!-- Activity Crashing & Cost-Time Trade-off -->
+        <div class="lg:col-span-4 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Activity Crashing Trade-Off (ITPM)
+              </h3>
+              <p class="text-[11px] text-slate-400">Unit II &amp; III: Compressing critical path duration from 27d to 18d.</p>
+            </div>
+          </div>
+          <div class="h-56">
+            <canvas id="crashing-bar-chart"></canvas>
+          </div>
+          <div class="mt-2 text-[10px] text-slate-400 leading-tight">
+            *Crash slope determines optimal compression priority to minimize expenditure.
+          </div>
+        </div>
+
+        <!-- Agile Sprint Burndown & Velocity Chart -->
+        <div class="lg:col-span-4 glass-panel p-5 rounded-2xl border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="trending-down" class="w-4 h-4 text-indigo-400"></i> Agile Sprint Burndown (ITPM Unit V)
+              </h3>
+              <p class="text-[11px] text-slate-400">Story points burndown vs Ideal guideline across sprints.</p>
+            </div>
+          </div>
+          <div class="h-56">
+            <canvas id="burndown-chart"></canvas>
+          </div>
+          <div class="mt-2 text-[10px] text-slate-400 leading-tight">
+            *Velocity remains consistent at ~11 story points per sprint across architectural milestones.
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 6: MINI PROJECT REPORTS & SYLLABUS MAPPING (BVDU DET CSBS)             -->
+    <!-- ========================================================================= -->
+    <section id="view-syllabus" class="tab-view hidden space-y-6">
+      
+      <!-- Academic Reports Selector Banner -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 gradient-border">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Bharati Vidyapeeth (BVDU) Mini Project Reports</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Complete documentation, chapter breakdowns, and syllabus compliance for all 3 subjects.</p>
+          </div>
+        </div>
+
+        <!-- 3 Subject Report Switcher Tabs -->
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-3 overflow-x-auto scrollbar-none text-xs font-semibold pt-2">
+          <button onclick="switchReportTab('es')" id="report-tab-btn-es" class="report-tab-btn active px-4 py-2 rounded-lg bg-indigo-600 text-white flex items-center gap-2 transition">
+            <i data-lucide="server" class="w-4 h-4"></i> 1. Enterprise Systems (Elective VI A)
+          </button>
+          <button onclick="switchReportTab('astma')" id="report-tab-btn-astma" class="report-tab-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-2 transition">
+            <i data-lucide="brain-circuit" class="w-4 h-4"></i> 2. ASTMA (Elective IV B)
+          </button>
+          <button onclick="switchReportTab('itpm')" id="report-tab-btn-itpm" class="report-tab-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center gap-2 transition">
+            <i data-lucide="kanban-square" class="w-4 h-4"></i> 3. IT Project Management (ITPM)
+          </button>
+        </div>
+      </div>
+
+      <!-- Report View 1: Enterprise Systems Report -->
+      <div id="report-view-es" class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6 text-xs text-slate-300 leading-relaxed">
+        <div class="border-b border-slate-800 pb-4">
+          <span class="text-[11px] font-mono text-indigo-400 uppercase font-semibold">Course: Elective VI A — Enterprise Systems</span>
+          <h3 class="text-xl font-extrabold text-white mt-1">Smart Book Review Management &amp; Customer Opinion Mining System</h3>
+          <p class="text-slate-400 text-xs mt-1">Architecture, ERP Modularity, 3-Tier MVC, and Role-Based Access Control</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-bold text-white mb-1">Abstract</h4>
+            <p>
+              This enterprise platform integrates a 3-tier Model-View-Controller (MVC) architecture with Service-Oriented Architecture (SOA) principles to provide comprehensive literature inventory and customer opinion intelligence. Built using a normalized SQLite relational data tier, an asynchronous FastAPI application logic tier, and a responsive glassmorphic Tailwind presentation tier, the system enables segregated capabilities for Administrators and Customers while providing cryptographic audit trails and ERP master catalog management.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-indigo-400 mb-1">Chapter 1: Introduction &amp; Enterprise Scope</h5>
+              <p class="text-[11px]">
+                Defines the organizational motivation to transform raw consumer book feedback into actionable CRM intelligence. Incorporates loose coupling, open REST contracts, and asynchronous client communication.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-indigo-400 mb-1">Chapter 2: ERP Modularity &amp; System Tiers</h5>
+              <p class="text-[11px]">
+                Maps enterprise modules: Materials Management (Book Catalog), Sales &amp; CRM (Customer Feedback &amp; CSAT), Security Subsystem (RBAC with SHA-256 password salting and digital audit signatures).
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-indigo-400 mb-1">Chapter 3: Implementation &amp; Database Architecture</h5>
+              <p class="text-[11px]">
+                Relational schema design with 36 titles across 35 distinct genres, foreign-key constraints on customer reviews, transactional ACID guarantees, and automated metrics recalculation on every review submission.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-indigo-400 mb-1">Chapter 4: Results &amp; System Screenshots</h5>
+              <p class="text-[11px]">
+                Presents Figure 5.1 (Product-wise Sentiment Analysis bar chart), Figure 5.2 (Aspect Frequency bar chart), and Figure 5.3 (Stored Reviews Table) verified under both Admin and Customer roles.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 2: ASTMA Report -->
+      <div id="report-view-astma" class="hidden glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6 text-xs text-slate-300 leading-relaxed">
+        <div class="border-b border-slate-800 pb-4">
+          <span class="text-[11px] font-mono text-purple-400 uppercase font-semibold">Course: Elective IV B — Advanced Social, Text and Media Analytics</span>
+          <h3 class="text-xl font-extrabold text-white mt-1">Aspect-Based Opinion Mining &amp; Lexicon Sentiment Intelligence</h3>
+          <p class="text-slate-400 text-xs mt-1">VADER Scoring, 10 Domain Literary Aspects, RAKE Keyphrases, and Temporal Polarization</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-bold text-white mb-1">Abstract</h4>
+            <p>
+              Applies multi-stage natural language processing (NLP) pipelines to unstructured literary reviews from Kaggle, Amazon, and Goodreads. Preprocessing includes lowercasing, regex cleaning, tokenization, stopword removal, and morphological reduction. Aspect-based sentiment analysis scores 10 literary dimensions (Plot &amp; Story, Writing Style, Character Development, Pacing, Emotional Depth, Worldbuilding, Dialogue, Ending &amp; Climax, Originality &amp; Concept, Price &amp; Value) while Rapid Automatic Keyword Extraction (RAKE) calculates token co-occurrence degree-to-frequency ratios.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-purple-400 mb-1">Unit I &amp; II: Text Mining &amp; Sentiment Modeling</h5>
+              <p class="text-[11px]">
+                VADER compound polarity $[-1.0, +1.0]$, subjective confidence thresholds, emotion classification (Joy, Surprise, Sadness, Anger, Fear), and real-time client typing inference.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-purple-400 mb-1">Unit III: Keyword Extraction &amp; Evaluation</h5>
+              <p class="text-[11px]">
+                Implementation of RAKE $deg(w)/freq(w)$ candidate scoring and supervised Scikit-Learn TF-IDF + Multinomial Naive Bayes benchmark with Precision, Recall, F1, and Confusion Matrix.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-purple-400 mb-1">Unit IV &amp; V: Web Clickstream &amp; Network Analysis</h5>
+              <p class="text-[11px]">
+                Clickstream funnel tracking with randomized A/B testing simulator and bipartite reader-book social graph with degree centrality calculation $C_d(v) = deg(v)/(N-1)$.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-purple-400 mb-1">Unit VI: Unsupervised Topic Detection (K-Means)</h5>
+              <p class="text-[11px]">
+                $K=4$ cluster centroids in sparse TF-IDF vector space, automated top keyword extraction per centroid, and Apriori association rule mining ($Support, Confidence, Lift$).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report View 3: ITPM Report -->
+      <div id="report-view-itpm" class="hidden glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6 text-xs text-slate-300 leading-relaxed">
+        <div class="border-b border-slate-800 pb-4">
+          <span class="text-[11px] font-mono text-emerald-400 uppercase font-semibold">Course: IT Project Management (ITPM)</span>
+          <h3 class="text-xl font-extrabold text-white mt-1">Project Charter, WBS, 16-Week Schedule, and ₹55,000 Budget Governance</h3>
+          <p class="text-slate-400 text-xs mt-1">Critical Path Method (PERT/CPM), 6 Project Risks, and Agile Scrum Governance</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-bold text-white mb-1">Abstract</h4>
+            <p>
+              Establishes a rigorous 16-week project management baseline for developing the integrated opinion mining system. Formulates a 6-phase Work Breakdown Structure (WBS), 7 key milestones, a 6-role human resource plan, an itemized cost estimate of ₹55,000, and a 6-item qualitative risk register. Formal project scheduling incorporates the Program Evaluation and Review Technique (PERT) to calculate expected durations $t_e = (a + 4m + b)/6$ and CPM critical path compression.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-emerald-400 mb-1">WBS &amp; 16-Week Schedule (Figure 5.1 &amp; 5.2)</h5>
+              <p class="text-[11px]">
+                6 hierarchical phases spanning Requirement Analysis, Database Design, ASTMA NLP Engine, ES Module, QA Testing, and Deployment across the 16 calendar weeks.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-emerald-400 mb-1">Budget Allocation (₹55,000 Total)</h5>
+              <p class="text-[11px]">
+                Itemized: Software Development (₹25,000 / 45.5%), Database &amp; Cloud (₹10,000 / 18.2%), QA Testing (₹8,000 / 14.5%), Documentation (₹5,000 / 9.1%), Miscellaneous (₹7,000 / 12.7%).
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-emerald-400 mb-1">Qualitative Risk Management Register</h5>
+              <p class="text-[11px]">
+                Tracks 6 risks including review data noise, NLP sentiment misclassification, database crashes, schedule delays, module integration failures, and regression gaps.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <h5 class="font-bold text-emerald-400 mb-1">Agile Scrum &amp; Activity Crashing Trade-Off</h5>
+              <p class="text-[11px]">
+                Interactive 4-column sprint board combined with Activity Crashing slope calculations $S = (C_c - C_n)/(T_n - T_c)$ compressing critical path from 27 to 18 days.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syllabus Compliance Matrix -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+            <i data-lucide="check-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Curriculum &amp; Subject Concept Compliance Matrix</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Verification of all syllabus outcomes across Enterprise Systems, Text Analytics, and ITPM.</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/70 mt-6">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="py-3 px-4">Subject &amp; Elective</th>
+                <th class="py-3 px-4">Syllabus Unit Concept</th>
+                <th class="py-3 px-4">Implementation in Project</th>
+                <th class="py-3 px-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="syllabus-matrix-body" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Loaded via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Peer-Reviewed References (2024–2026) -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+            <i data-lucide="book-marked" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">Academic References &amp; Citations (2024–2026)</h2>
+            <p class="text-xs sm:text-sm text-slate-400">Recent literature establishing state-of-the-art methodology in text sentiment and enterprise architecture.</p>
+          </div>
+        </div>
+
+        <div id="citations-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Loaded via app.js -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ================= BOOK DETAIL & SENTIMENT EXPLORER MODAL ================= -->
+  <div id="book-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div class="glass-modal w-full max-w-5xl rounded-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 border border-slate-700 space-y-6">
+      
+      <!-- Modal Header & Close -->
+      <div class="flex items-start justify-between pb-4 border-b border-slate-800">
+        <div class="flex gap-4 items-center">
+          <img id="modal-book-cover" src="" alt="Cover" class="w-16 h-24 sm:w-20 sm:h-28 object-cover rounded-lg shadow-md border border-slate-700">
+          <div>
+            <span id="modal-book-genre" class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">Fiction</span>
+            <h2 id="modal-book-title" class="text-xl sm:text-2xl font-bold text-white mt-1">Book Title</h2>
+            <p id="modal-book-author" class="text-xs sm:text-sm text-slate-400">by Author Name</p>
+            <div class="flex items-center gap-3 mt-1 text-xs text-slate-400 font-mono">
+              <span id="modal-book-isbn">ISBN: ---</span> •
+              <span id="modal-book-pages">0 pages</span> •
+              <span id="modal-book-price" class="text-emerald-400 font-semibold">$0.00</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeBookModal()" class="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Description -->
+      <p id="modal-book-desc" class="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+        Description text goes here...
+      </p>
+
+      <!-- Charts & Aggregated Sentiment Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Chart 1: Sentiment Donut -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-center">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Sentiment Breakdown</h4>
+          <div class="h-44 relative flex items-center justify-center">
+            <canvas id="modal-sentiment-chart"></canvas>
+          </div>
+          <div id="modal-sentiment-percentages" class="text-xs font-medium text-slate-400 mt-2"></div>
+        </div>
+
+        <!-- Aspect Breakdown Bars -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3">Aspect Analysis</h4>
+          <div id="modal-aspects-list" class="space-y-2.5 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- RAKE Keywords & Temporal Polarity -->
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Extracted RAKE Keywords</h4>
+            <div id="modal-keywords-list" class="flex flex-wrap gap-1.5 mb-4">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Temporal Sentiment (2024–2026)</h4>
+            <div class="h-24">
+              <canvas id="modal-temporal-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Customer Reviews List -->
+      <div class="pt-4 border-t border-slate-800">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="message-square-text" class="w-4 h-4 text-indigo-400"></i> Reader Reviews (<span id="modal-reviews-count">0</span>)
+          </h3>
+          <button onclick="focusReviewFromModal()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Write Review
+          </button>
+        </div>
+
+        <div id="modal-reviews-feed" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= AUTHENTICATION MODAL ================= -->
+  <div id="auth-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="glass-modal w-full max-w-md rounded-2xl p-6 sm:p-8 border border-slate-700 space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 id="auth-modal-title" class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="lock" class="w-5 h-5 text-indigo-400"></i> Account Authentication
+        </h3>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick 1-Click Credentials Select -->
+      <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-2">
+        <span class="text-slate-400 font-semibold block">Quick 1-Click Test Login:</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="quickLogin('admin'); closeAuthModal();" class="p-2 rounded-lg bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/25 text-left transition">
+            <div class="font-bold">Admin Portal</div>
+            <div class="text-[10px] text-slate-400 font-mono">admin / admin123</div>
+          </button>
+          <button onclick="quickLogin('customer'); closeAuthModal();" class="p-2 rounded-lg bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 border border-emerald-500/25 text-left transition">
+            <div class="font-bold">Customer Portal</div>
+            <div class="text-[10px] text-slate-400 font-mono">customer / customer123</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom Login Form -->
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs pt-1">
+        <div>
+          <label class="block text-slate-400 mb-1">Username</label>
+          <input type="text" id="auth-username" required placeholder="admin or customer" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-slate-200">
+        </div>
+        
+        <div id="auth-error-msg" class="hidden text-rose-400 text-xs p-2 rounded bg-rose-500/10 border border-rose-500/20"></div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="glass-panel border-t border-slate-800 py-6 mt-12 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i>
+        <span>Sentilink Enterprise © 2026 • 3-Tier MVC Architecture • BVDU DET CSBS</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-500 text-[11px]">
+        <span>Elective VI A: Enterprise Systems</span>
+        <span>•</span>
+        <span>Elective IV B: Advanced Text Analytics</span>
+        <span>•</span>
+        <span>IT Project Management</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="/static/app.js?v=20261006_2300"></script>
+</body>
+</html>

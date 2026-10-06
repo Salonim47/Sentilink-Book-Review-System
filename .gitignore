@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Environment and logs
+.env
+*.log
+lhr.log
+lhr_err.log
+pinggy.log
+pinggy_err.log
+
+# Large local binary
+cloudflared.exe
+
+# OS generated
+.DS_Store
+Thumbs.db
