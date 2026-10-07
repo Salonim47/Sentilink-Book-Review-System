@@ -1,14 +1,14 @@
 """
-Sentilink Enterprise — Executive Keynote Deck Generator
-Autonomous Book Review Sentiment Analysis, Opinion Mining & Enterprise Decision Support System
-BVDU DET CSBS: Enterprise Systems, ASTMA, IT Project Management
+Sentilink Enterprise — Academic Project Presentation Deck
+Smart Book Review Management & Customer Opinion Analytics
+Theory behind the system: text mining, enterprise systems and IT project management
+BVDU DET CSBS: ES, ASTMA, ITPM (Saloni Mahajan)
 
-Completely unique, ultra-modern Cyber-Executive / Dark Glassmorphism aesthetic.
-Distinct from the classmate's retro plum/pink presentation:
-- Tech Palette: Obsidian Navy (#080c16), Slate Glass (#131c2e), Electric Cyan (#06b6d4),
-  Cyber Indigo (#6366f1), Emerald Mint (#10b981), and Coral Rose (#f43f5e).
-- Layout: Modern 16:9 widescreen, glowing category badges, tech card containers,
-  accent top-stripes, metric stat blocks, and clean typographic hierarchy.
+13 Clean, Pedagogical, High-Scoring Slides
+- Elegant scholarly typography: Georgia-Bold titles, Segoe UI body
+- High-contrast, easy-to-read cards, clean callouts, numbered step badges
+- 100% Book Review domain content (crisp, grounded, non-exaggerated)
+- Refined scholarly color scheme: Deep Navy (#0F172A), Royal Sapphire (#2563EB), Emerald (#059669)
 """
 
 import os
@@ -18,1297 +18,1019 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-# Slide dimensions: 16:9 widescreen (1152 x 648 pt)
+# 16:9 Widescreen slide dimensions
 W, H = 1152, 648
 
-# Color Palette — Cyber-Executive Modern Dark Theme
-BG_DARK = colors.HexColor('#080d1a')          # Deep Obsidian Navy
-BG_SLATE = colors.HexColor('#0f172a')         # Midnight Slate
-CARD_BG = colors.HexColor('#131e33')          # Dark Glass Container
-CARD_BORDER = colors.HexColor('#202e47')      # Subtle Slate Border
-CARD_BORDER_HI = colors.HexColor('#334668')   # Active Slate Border
+# Scholarly Modern Palette
+C_DARK_BG = colors.HexColor('#0F172A')       # Deep Oxford Navy for Slide 1 & 13
+C_DARK_CARD = colors.HexColor('#1E293B')     # Charcoal Slate Container
+C_LIGHT_BG = colors.HexColor('#F8FAFC')      # Crisp Light Slide Canvas (Slate 50)
+C_WHITE = colors.HexColor('#FFFFFF')
+C_CARD_BG = colors.HexColor('#FFFFFF')
+C_CARD_TINT = colors.HexColor('#F1F5F9')     # Soft Tinted Container (Slate 100)
+C_BORDER = colors.HexColor('#E2E8F0')        # Subtle Card Border (Slate 200)
 
-TEXT_WHITE = colors.HexColor('#f8fafc')       # Primary Crisp White
-TEXT_MUTED = colors.HexColor('#94a3b8')       # Muted Slate
-TEXT_SUBTLE = colors.HexColor('#64748b')      # Subtle Gray
-TEXT_CODE = colors.HexColor('#cbd5e1')        # Code Monospace Text
+# Typography Colors
+C_TEXT_DARK = colors.HexColor('#0F172A')     # High-contrast charcoal heading (Slate 900)
+C_TEXT_BODY = colors.HexColor('#334155')     # Slate-700 readable body text
+C_TEXT_MUTED = colors.HexColor('#64748B')    # Slate-500 subtitle / caption
+C_TEXT_WHITE = colors.HexColor('#FFFFFF')
+C_TEXT_LIGHT_MUTED = colors.HexColor('#94A3B8')
 
-CYAN = colors.HexColor('#06b6d4')             # Electric Cyan (ASTMA / NLP)
-CYAN_GLOW = colors.HexColor('#22d3ee')
-INDIGO = colors.HexColor('#6366f1')           # Cyber Indigo (ES / System)
-INDIGO_LIGHT = colors.HexColor('#818cf8')
-EMERALD = colors.HexColor('#10b981')          # Emerald Mint (Positive / ITPM)
-EMERALD_LIGHT = colors.HexColor('#34d399')
-ROSE = colors.HexColor('#f43f5e')             # Coral Rose (Negative / Risk)
-AMBER = colors.HexColor('#f59e0b')            # Amber Gold (Neutral / Warning)
-PURPLE = colors.HexColor('#a855f7')           # Royal Violet (Aspects)
+# Accents (Scholarly Royal Blue & Semantic Colors)
+C_PRIMARY = colors.HexColor('#2563EB')       # Royal Sapphire Blue
+C_PRIMARY_LIGHT = colors.HexColor('#60A5FA')
+C_PRIMARY_BG = colors.HexColor('#EFF6FF')
+C_GREEN = colors.HexColor('#059669')         # Positive Sentiment Accent (Emerald)
+C_SLATE_BAR = colors.HexColor('#64748B')     # Neutral Sentiment Accent
+C_RED_BAR = colors.HexColor('#DC2626')       # Negative Sentiment Accent (Crimson)
+C_AMBER = colors.HexColor('#D97706')         # Warning / Highlight
 
-# Register Crisp Windows TrueType Fonts
-FONT_HEADING = 'Helvetica-Bold'
-FONT_REGULAR = 'Helvetica'
+# Register Windows TrueType Fonts with Helvetica fallback
+FONT_TITLE = 'Helvetica-Bold'
+FONT_BODY = 'Helvetica'
 FONT_BOLD = 'Helvetica-Bold'
 
 fonts_dir = r'C:\Windows\Fonts'
-if os.path.exists(os.path.join(fonts_dir, 'segoeuib.ttf')) and os.path.exists(os.path.join(fonts_dir, 'segoeui.ttf')):
-    try:
+try:
+    if os.path.exists(os.path.join(fonts_dir, 'georgiab.ttf')) and os.path.exists(os.path.join(fonts_dir, 'georgia.ttf')):
+        pdfmetrics.registerFont(TTFont('Georgia', os.path.join(fonts_dir, 'georgia.ttf')))
+        pdfmetrics.registerFont(TTFont('Georgia-Bold', os.path.join(fonts_dir, 'georgiab.ttf')))
+        FONT_TITLE = 'Georgia-Bold'
+except Exception:
+    pass
+
+try:
+    if os.path.exists(os.path.join(fonts_dir, 'segoeui.ttf')) and os.path.exists(os.path.join(fonts_dir, 'segoeuib.ttf')):
         pdfmetrics.registerFont(TTFont('SegoeUI', os.path.join(fonts_dir, 'segoeui.ttf')))
         pdfmetrics.registerFont(TTFont('SegoeUI-Bold', os.path.join(fonts_dir, 'segoeuib.ttf')))
-        FONT_REGULAR = 'SegoeUI'
+        FONT_BODY = 'SegoeUI'
         FONT_BOLD = 'SegoeUI-Bold'
-        FONT_HEADING = 'SegoeUI-Bold'
-    except Exception:
-        pass
+except Exception:
+    pass
 
 
 def top_y(dist):
     return H - dist
 
 
-def draw_tech_background(c):
-    c.saveState()
-    # Dark Canvas
-    c.setFillColor(BG_DARK)
-    c.rect(0, 0, W, H, fill=1, stroke=0)
-
-    # Ambient Top Glow Accent Line
-    c.setFillColor(INDIGO)
-    c.rect(0, H - 4, W, 4, fill=1, stroke=0)
-    c.setFillColor(CYAN)
-    c.rect(0, H - 4, 380, 4, fill=1, stroke=0)
-
-    # Subtle ambient circle glow in corner
-    c.setFillColor(colors.HexColor('#0e172f'))
-    c.circle(W - 40, H - 40, 220, fill=1, stroke=0)
-    c.setFillColor(colors.HexColor('#0a1122'))
-    c.circle(80, 40, 160, fill=1, stroke=0)
-
-    # Bottom watermark footer
-    c.setFillColor(TEXT_SUBTLE)
-    c.setFont(FONT_REGULAR, 9)
-    c.drawString(60, 22, "SENTILINK ENTERPRISE © 2026 • BVDU DET PUNE CSBS • ELECTIVE VI A · IV B · ITPM")
-    c.drawRightString(W - 60, 22, "3-TIER MVC + SOA ARCHITECTURE • CONFIDENTIAL PROJECT REPORT")
-    c.restoreState()
+def wrap_text(c, text, font, font_size, max_width):
+    words = text.split()
+    lines = []
+    cur_line = []
+    for w in words:
+        test_line = " ".join(cur_line + [w])
+        if c.stringWidth(test_line, font, font_size) <= max_width:
+            cur_line.append(w)
+        else:
+            if cur_line:
+                lines.append(" ".join(cur_line))
+            cur_line = [w]
+    if cur_line:
+        lines.append(" ".join(cur_line))
+    return lines
 
 
-def draw_card(c, x, y, w, h, r=12, top_accent=None, bg=CARD_BG, border=CARD_BORDER):
+def draw_multiline(c, x, y, text, font, font_size, color, leading, max_width):
+    lines = wrap_text(c, text, font, font_size, max_width)
+    c.setFont(font, font_size)
+    c.setFillColor(color)
+    cur_y = y
+    for line in lines:
+        c.drawString(x, cur_y, line)
+        cur_y -= leading
+    return cur_y
+
+
+def draw_card(c, x, y, w, h, r=12, bg=C_CARD_BG, border=C_BORDER, stroke=1):
     c.saveState()
     c.setFillColor(bg)
-    c.setStrokeColor(border)
-    c.setLineWidth(1)
-    c.roundRect(x, y, w, h, r, fill=1, stroke=1)
-
-    # Optional top accent bar
-    if top_accent:
-        c.setFillColor(top_accent)
-        c.roundRect(x + 1, y + h - 5, w - 2, 4, 2, fill=1, stroke=0)
+    if stroke:
+        c.setStrokeColor(border)
+        c.setLineWidth(1)
+        c.roundRect(x, y, w, h, r, fill=1, stroke=1)
+    else:
+        c.roundRect(x, y, w, h, r, fill=1, stroke=0)
     c.restoreState()
 
 
-def draw_badge(c, text, x, y, bg_col, text_col, font_size=10, px=10, py=5):
+def draw_circle_badge(c, x, y, num_str, r=16, bg=C_PRIMARY, text_color=C_WHITE):
     c.saveState()
-    c.setFont(FONT_BOLD, font_size)
-    tw = c.stringWidth(text, FONT_BOLD, font_size)
-    bw = tw + px * 2
-    bh = font_size + py * 2
-    c.setFillColor(bg_col)
-    c.roundRect(x, y, bw, bh, bh / 2.0, fill=1, stroke=0)
-    c.setFillColor(text_col)
-    c.drawString(x + px, y + py, text)
+    c.setFillColor(bg)
+    c.circle(x, y, r, fill=1, stroke=0)
+    c.setFillColor(text_color)
+    c.setFont(FONT_BOLD, 13)
+    c.drawCentredString(x, y - 4, num_str)
     c.restoreState()
-    return bw
 
 
-def draw_slide_header(c, category, title, subtitle=None):
+def draw_slide_header(c, title, subtitle=None):
     c.saveState()
-    # Category tag with cyan indicator dot
-    c.setFillColor(CYAN)
-    c.circle(65, top_y(54), 4, fill=1, stroke=0)
-    c.setFont(FONT_BOLD, 11)
-    c.drawString(76, top_y(58), category.upper())
+    # Crisp Light Canvas Base
+    c.setFillColor(C_LIGHT_BG)
+    c.rect(0, 0, W, H, fill=1, stroke=0)
 
-    # Main Title
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 28)
-    c.drawString(60, top_y(95), title)
+    # Title
+    c.setFillColor(C_TEXT_DARK)
+    c.setFont(FONT_TITLE, 38)
+    c.drawString(70, top_y(90), title)
 
     # Subtitle
     if subtitle:
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 13)
-        c.drawString(60, top_y(122), subtitle)
+        c.setFillColor(C_TEXT_MUTED)
+        c.setFont(FONT_BODY, 15)
+        c.drawString(70, top_y(128), subtitle)
+
     c.restoreState()
 
 
 # =========================================================================
-# SLIDE 1: Cover Keynote Slide
+# SLIDE 1: Cover Slide
 # =========================================================================
 def render_slide_1(c):
-    draw_tech_background(c)
     c.saveState()
+    # Dark Canvas
+    c.setFillColor(C_DARK_BG)
+    c.rect(0, 0, W, H, fill=1, stroke=0)
 
-    # Glowing Badge Top
-    draw_badge(c, "ENTERPRISE AI PLATFORM • 2026 CAPSTONE EDITION", 70, top_y(160),
-               colors.HexColor('#1e2942'), CYAN, font_size=11, px=14, py=6)
+    # Elegant curved ambient shapes on right
+    c.setFillColor(colors.HexColor('#1E293B'))
+    c.circle(W - 60, H / 2 + 70, 240, fill=1, stroke=0)
+    c.setFillColor(colors.HexColor('#1E3A8A'))
+    c.circle(W + 20, H / 2 - 80, 220, fill=1, stroke=0)
+    c.setFillColor(colors.HexColor('#172554'))
+    c.circle(W - 160, H / 2 - 120, 150, fill=1, stroke=0)
 
-    # Primary Title
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 44)
-    c.drawString(70, top_y(225), "SENTILINK ENTERPRISE")
+    # Top tracker
+    c.setFont(FONT_BOLD, 15)
+    c.setFillColor(colors.HexColor('#60A5FA'))
+    c.drawString(75, top_y(160), "E S   ·   I T P M   ·   A S T M A")
 
-    # Gradient-like Accent Subheading
-    c.setFillColor(CYAN_GLOW)
-    c.setFont(FONT_HEADING, 24)
-    c.drawString(70, top_y(268), "Autonomous Book Review Sentiment Analysis & Reader Opinion Mining")
+    # Main Title (3 lines)
+    c.setFont(FONT_TITLE, 44)
+    c.setFillColor(C_WHITE)
+    c.drawString(75, top_y(240), "Smart Book Review")
+    c.drawString(75, top_y(298), "Management & Customer")
+    c.drawString(75, top_y(356), "Opinion Analytics")
 
-    # Long Executive Description
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 15)
-    c.drawString(70, top_y(320), "A production 3-Tier MVC architecture unifying multi-method NLP text mining,")
-    c.drawString(70, top_y(345), "real-time opinion extraction, and rigorous IT project delivery governance.")
+    # Subtitle
+    c.setFont(FONT_BODY, 16)
+    c.setFillColor(C_TEXT_LIGHT_MUTED)
+    c.drawString(75, top_y(415), "Theory behind the system: text mining, enterprise systems and IT project management")
 
-    # 3 Subject Triad Chips at Bottom
-    chips_y = top_y(460)
-    chip_w = 320
-    gap = 25
-
-    chips = [
-        ("ELECTIVE VI A", "Enterprise Systems", "SOA REST, Master Data, RBAC & 5-Yr TCO", INDIGO),
-        ("ELECTIVE IV B", "Advanced Text Analytics", "VADER, RAKE, K-Means & Apriori Rules", CYAN),
-        ("IT PROJECT MGMT", "ITPM Governance", "WBS, 16-Wk Plan, PERT CPM & ₹55k Cost", EMERALD)
-    ]
-
-    for i, (subj, title, desc, col) in enumerate(chips):
-        cx = 70 + i * (chip_w + gap)
-        draw_card(c, cx, chips_y, chip_w, 105, r=10, top_accent=col)
-
-        c.setFillColor(col)
-        c.setFont(FONT_BOLD, 10)
-        c.drawString(cx + 18, chips_y + 76, subj)
-
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_HEADING, 15)
-        c.drawString(cx + 18, chips_y + 52, title)
-
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(cx + 18, chips_y + 26, desc)
-
-    # Institutional Tag
-    c.setFillColor(TEXT_SUBTLE)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(70, top_y(545), "Bharati Vidyapeeth Deemed University (BVDU DET Pune) • Computer Science & Business Systems")
+    # Student & Department line
+    c.setFont(FONT_BODY, 13)
+    c.setFillColor(colors.HexColor('#64748B'))
+    c.drawString(75, top_y(540), "Saloni Mahajan   |   B.Tech Computer Science & Business Systems   |   BVDU DET Pune")
 
     c.restoreState()
-    c.showPage()
 
 
 # =========================================================================
-# SLIDE 2: Executive Summary & Coursework Synthesis
+# SLIDE 2: One system, three subjects
 # =========================================================================
 def render_slide_2(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Executive Overview", "One Unified Platform • Three Core Subject Pillars",
-                      "Bridging academic theory with enterprise production engineering across ES, ASTMA, and ITPM.")
+    draw_slide_header(
+        c,
+        "One system, three subjects",
+        "The project turns raw customer reviews into business decisions by combining three coursework areas."
+    )
 
-    card_w = 325
-    card_h = 320
-    card_y = top_y(465)
+    # 3 Cards
+    card_w = 318
+    card_h = 245
+    card_y = top_y(395)
     gap = 28
-    start_x = 60
+    start_x = 70
 
-    pillars = [
-        ("ASTMA", CYAN, "Text & Media Analytics", [
-            ("Unsupervised Topics", "K-Means discovery of 4 latent themes"),
-            ("Valence Scoring", "Dual VADER + Supervised Naive Bayes"),
-            ("Keyphrase Mining", "RAKE word degree to frequency ratio"),
-            ("Network Analytics", "Bipartite reader-book social graph")
-        ]),
-        ("ES", INDIGO, "Enterprise Systems", [
-            ("3-Tier Architecture", "Presentation, SOA API, Relational DB"),
-            ("Master Catalog", "36 books across 35 distinct genres"),
-            ("RBAC Security", "Admin moderation vs Customer workflows"),
-            ("Economic Modeling", "5-Year TCO: COTS vs Bespoke build")
-        ]),
-        ("ITPM", EMERALD, "Project Delivery", [
-            ("Scope & WBS", "5 Work packages & 15 discrete tasks"),
-            ("Schedule Control", "16-Week lifecycle & 7 stage-gates"),
-            ("CPM / PERT", "Probabilistic expected duration & variance"),
-            ("Cost Governance", "Bottom-up ₹55,000 budget tracking")
-        ])
+    cards_data = [
+        ("1", "ASTMA", "Applied Statistics & Text Mining. Preprocessing, sentiment analysis and opinion mining on book review text.", C_PRIMARY),
+        ("2", "ES", "Enterprise Systems. Database, book catalog and review management, and the analytics dashboard.", C_PRIMARY),
+        ("3", "ITPM", "IT Project Management. WBS, schedule, resources, cost and risk planning.", C_PRIMARY),
     ]
 
-    for i, (pill_tag, col, title, bullets) in enumerate(pillars):
+    for i, (num, title, body, badge_col) in enumerate(cards_data):
         cx = start_x + i * (card_w + gap)
-        draw_card(c, cx, card_y, card_w, card_h, r=12, top_accent=col)
+        draw_card(c, cx, card_y, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
 
-        draw_badge(c, pill_tag, cx + 22, card_y + card_h - 40, colors.HexColor('#1c2842'), col, font_size=11)
+        # Number Badge
+        draw_circle_badge(c, cx + 38, card_y + card_h - 40, num, r=18, bg=badge_col)
 
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_HEADING, 19)
-        c.drawString(cx + 22, card_y + card_h - 72, title)
+        # Title
+        c.setFont(FONT_TITLE, 22)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawString(cx + 72, card_y + card_h - 48, title)
 
-        by = card_y + card_h - 110
-        for b_head, b_desc in bullets:
-            c.setFillColor(col)
-            c.circle(cx + 26, by + 4, 3, fill=1, stroke=0)
+        # Body
+        draw_multiline(c, cx + 26, card_y + card_h - 90, body, FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 52)
 
-            c.setFillColor(TEXT_WHITE)
-            c.setFont(FONT_BOLD, 12)
-            c.drawString(cx + 36, by, b_head)
-
-            c.setFillColor(TEXT_MUTED)
-            c.setFont(FONT_REGULAR, 11)
-            c.drawString(cx + 36, by - 16, b_desc)
-            by -= 44
-
-    # Bottom Stat Counters
-    stat_y = top_y(575)
-    stat_w = 235
-    stat_gap = 28
+    # Bottom Stat Row
+    stat_y = top_y(510)
     stats = [
-        ("124+ Stored Reviews", "Validated Corpus", CYAN),
-        ("35 Master Genres", "Literature Diversity", INDIGO),
-        ("10 Domain Aspects", "Opinion Dimensions", PURPLE),
-        ("₹55,000 Budget", "Strict Financial Cap", EMERALD)
+        ("124+", "reviews\nanalysed", C_PRIMARY),
+        ("3", "sentiment\nclasses", C_PRIMARY),
+        ("10", "opinion\naspects", C_PRIMARY),
     ]
+
+    stat_start_x = 75
+    stat_col_w = 346
 
     for i, (val, label, col) in enumerate(stats):
-        sx = start_x + i * (stat_w + stat_gap)
-        draw_card(c, sx, stat_y, stat_w, 75, r=8, bg=colors.HexColor('#0c1424'))
-
+        sx = stat_start_x + i * stat_col_w
+        c.setFont(FONT_TITLE, 46)
         c.setFillColor(col)
-        c.setFont(FONT_HEADING, 18)
-        c.drawString(sx + 16, stat_y + 40, val)
+        c.drawString(sx, stat_y, val)
 
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(sx + 16, stat_y + 18, label)
-
-    c.showPage()
+        vw = c.stringWidth(val, FONT_TITLE, 46)
+        label_lines = label.split('\n')
+        c.setFont(FONT_BODY, 15)
+        c.setFillColor(C_TEXT_BODY)
+        c.drawString(sx + vw + 14, stat_y + 16, label_lines[0])
+        if len(label_lines) > 1:
+            c.drawString(sx + vw + 14, stat_y - 4, label_lines[1])
 
 
 # =========================================================================
-# SLIDE 3: End-to-End System Architecture (3-Tier MVC + SOA)
+# SLIDE 3: The text-mining pipeline
 # =========================================================================
 def render_slide_3(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Enterprise Systems", "3-Tier MVC Architecture & Service-Oriented Framework",
-                      "Clean separation of concerns with asynchronous REST contracts and relational ACID transactions.")
+    draw_slide_header(c, "The text-mining pipeline")
 
-    # 3 Layers Stacked
-    lx = 60
-    layer_w = 640
-    layer_h = 105
-    gap = 20
-
-    layers = [
-        ("Presentation Layer (Client Tier)",
-         "Tailwind CSS 3.0 • Vanilla JS (ES6+) • Chart.js 4.4 • Lucide Icons",
-         "Responsive multi-view dashboard, live NLP typing feedback, category filters & modal inspectors.",
-         CYAN),
-        ("Business Logic Layer (Application Tier)",
-         "FastAPI SOA Controller • Python 3.13 • Pydantic V2 • nlp_engine.py",
-         "20+ REST endpoints, VADER valence calculation, RAKE keyphrase extractor, K-Means & Apriori.",
-         INDIGO),
-        ("Data Persistence Layer (Database Tier)",
-         "SQLite 3.45 • B-Tree Indexing • Foreign Key Constraints • WAL Journaling",
-         "Relational schema: books, reviews, users, audit_logs. Sub-5ms query lookups.",
-         EMERALD)
+    # 6 pipeline stages
+    stages = [
+        ("Collect", "review CSVs", False),
+        ("Prepare", "prepare_dataset.py", False),
+        ("Preprocess", "preprocessing.py", True),
+        ("Sentiment", "sentiment_analysis.py", True),
+        ("Opinions", "opinion_mining.py", True),
+        ("Dashboard", "server.py", False),
     ]
 
-    ly = top_y(175)
-    for title, tech, desc, col in layers:
-        ly -= layer_h
-        draw_card(c, lx, ly, layer_w, layer_h, r=10, top_accent=col)
+    box_w = 142
+    box_h = 105
+    box_y = top_y(260)
+    gap = 26
+    start_x = 70
 
-        c.setFillColor(col)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(lx + 24, ly + layer_h - 26, title.upper())
+    for i, (name, script, is_dark) in enumerate(stages):
+        bx = start_x + i * (box_w + gap)
+        if is_dark:
+            draw_card(c, bx, box_y, box_w, box_h, r=12, bg=C_DARK_CARD, stroke=0)
+            c.setFont(FONT_BOLD, 16)
+            c.setFillColor(C_WHITE)
+            c.drawCentredString(bx + box_w / 2, box_y + box_h - 40, name)
+            c.setFont(FONT_BODY, 11)
+            c.setFillColor(C_TEXT_LIGHT_MUTED)
+            c.drawCentredString(bx + box_w / 2, box_y + 30, script)
+        else:
+            draw_card(c, bx, box_y, box_w, box_h, r=12, bg=C_CARD_TINT, border=C_BORDER)
+            c.setFont(FONT_BOLD, 16)
+            c.setFillColor(C_TEXT_DARK)
+            c.drawCentredString(bx + box_w / 2, box_y + box_h - 40, name)
+            c.setFont(FONT_BODY, 11)
+            c.setFillColor(C_TEXT_MUTED)
+            c.drawCentredString(bx + box_w / 2, box_y + 30, script)
 
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_HEADING, 15)
-        c.drawString(lx + 24, ly + layer_h - 50, tech)
+        # Arrow indicator between boxes
+        if i < len(stages) - 1:
+            c.setFont(FONT_BOLD, 22)
+            c.setFillColor(C_PRIMARY)
+            c.drawString(bx + box_w + 8, box_y + box_h / 2 - 6, "›")
 
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 12)
-        c.drawString(lx + 24, ly + 20, desc)
+    # Dark boxes note
+    c.setFont(FONT_BODY, 13)
+    c.setFillColor(C_TEXT_MUTED)
+    c.drawString(70, top_y(300), "Dark boxes are the ASTMA stages.")
 
-        ly -= gap
+    # "Why this order?" Box
+    callout_y = top_y(470)
+    callout_h = 135
+    callout_w = W - 140
+    draw_card(c, 70, callout_y, callout_w, callout_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
 
-    # Right Side: Architectural Quality Attributes
-    rx = 730
-    rw = 360
-    rh = 365
-    ry = top_y(515)
-    draw_card(c, rx, ry, rw, rh, r=12, top_accent=PURPLE)
+    c.setFont(FONT_TITLE, 22)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(100, callout_y + callout_h - 42, "Why this order?")
 
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 20)
-    c.drawString(rx + 24, ry + rh - 40, "Enterprise System Criteria")
-
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(rx + 24, ry + rh - 64, "Key attributes ensuring production viability:")
-
-    criteria = [
-        ("Shared Single Source of Truth", "Catalog, reviews, and NLP predictions live on one synchronized platform."),
-        ("Strict ACID Transactionality", "Atomic review submission with audit log triggers prevents state drift."),
-        ("Role-Based Access Control", "Customer review submission vs Admin review moderation & book management."),
-        ("Microservice Ready SOA", "Headless REST design allows hot-swapping NLP backends without UI disruption.")
-    ]
-
-    cy = ry + rh - 105
-    for c_title, c_desc in criteria:
-        c.setFillColor(PURPLE)
-        c.circle(rx + 28, cy + 3, 3, fill=1, stroke=0)
-
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 13)
-        c.drawString(rx + 38, cy, c_title)
-
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(rx + 38, cy - 16, c_desc[:48])
-        c.drawString(rx + 38, cy - 30, c_desc[48:])
-        cy -= 60
-
-    c.showPage()
+    body_text = "Each stage feeds the next. Clean, uniform data gives more reliable scores, and scores plus aspects power the dashboard KPIs."
+    draw_multiline(c, 100, callout_y + callout_h - 78, body_text, FONT_BODY, 15, C_TEXT_BODY, 24, callout_w - 60)
 
 
 # =========================================================================
-# SLIDE 4: Complete Text Mining Pipeline
+# SLIDE 4: Text preprocessing
 # =========================================================================
 def render_slide_4(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "ASTMA Pipeline", "6-Stage Asynchronous Text Mining & NLP Workflow",
-                      "Sequential enrichment transforming raw unstructured customer reviews into actionable intelligence.")
+    draw_slide_header(c, "Text preprocessing")
 
-    # 6 Step Blocks
-    step_w = 160
-    step_h = 170
-    start_x = 60
-    gap = 14
-    sy = top_y(320)
-
+    # Left: 5 numbered steps
     steps = [
-        ("01", "INGESTION", "Multi-Source Feed", "Amazon, Kaggle & User Submitted Text", colors.HexColor('#334155')),
-        ("02", "CLEANING", "Noise Strip", "URLs, HTML tags, special symbols & case fold", colors.HexColor('#334155')),
-        ("03", "TOKENIZE", "Linguistic Split", "Atomic word tokens & stopword elimination", CYAN),
-        ("04", "VALENCE", "VADER Scoring", "Compound [-1, +1] & punctuation boost", INDIGO),
-        ("05", "ASPECTS", "Domain Regex", "10 Literary aspects & RAKE keyphrase tags", PURPLE),
-        ("06", "EXECUTIVE", "BI Dashboard", "Real-time KPIs, CSAT gauge & visual charts", EMERALD)
+        ("1", "Lowercasing", "Masterpiece and masterpiece become one token"),
+        ("2", "Noise removal", "Strip URLs, numbers, punctuation symbols"),
+        ("3", "Tokenisation", "Split review text into word tokens"),
+        ("4", "Stopword removal", "Drop the, is, and, but"),
+        ("5", "Lemmatisation", "reading becomes read"),
     ]
 
-    for i, (num, tag, title, desc, col) in enumerate(steps):
-        sx = start_x + i * (step_w + gap)
-        draw_card(c, sx, sy, step_w, step_h, r=10, top_accent=col)
+    start_y = top_y(190)
+    step_gap = 68
+    for i, (num, title, desc) in enumerate(steps):
+        sy = start_y - i * step_gap
+        draw_circle_badge(c, 90, sy, num, r=18, bg=C_PRIMARY)
 
-        # Step Number
-        c.setFillColor(col)
-        c.setFont(FONT_HEADING, 24)
-        c.drawString(sx + 16, sy + step_h - 35, num)
+        c.setFont(FONT_BOLD, 16)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawString(124, sy + 3, title)
 
-        # Stage Tag
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_BOLD, 9)
-        c.drawString(sx + 16, sy + step_h - 55, tag)
+        c.setFont(FONT_BODY, 13)
+        c.setFillColor(C_TEXT_MUTED)
+        c.drawString(124, sy - 18, desc)
 
-        # Stage Title
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_HEADING, 13)
-        c.drawString(sx + 16, sy + step_h - 80, title)
+    # Right: Dark BEFORE / AFTER Card
+    card_x = 590
+    card_w = 490
+    card_h = 420
+    card_y = top_y(520)
+    draw_card(c, card_x, card_y, card_w, card_h, r=16, bg=C_DARK_CARD, stroke=0)
 
-        # Description
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(sx + 16, sy + 38, desc[:22])
-        c.drawString(sx + 16, sy + 22, desc[22:])
+    # BEFORE Section
+    c.setFont(FONT_BOLD, 13)
+    c.setFillColor(colors.HexColor('#94A3B8'))
+    c.drawString(card_x + 40, card_y + card_h - 50, "B E F O R E")
 
-    # Pipeline Callout Card Below
-    callout_y = top_y(540)
-    callout_h = 165
-    callout_w = W - 120
-    draw_card(c, 60, callout_y, callout_w, callout_h, r=12, top_accent=CYAN)
+    before_quote = "The novel has amazing character development, but the pacing made the middle chapters very boring!"
+    draw_multiline(c, card_x + 40, card_y + card_h - 90, before_quote, FONT_BODY, 16, C_WHITE, 26, card_w - 80)
 
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 19)
-    c.drawString(85, callout_y + callout_h - 38, "Architectural Pipeline Rationale")
+    # Subtle divider
+    c.setStrokeColor(colors.HexColor('#334155'))
+    c.setLineWidth(1)
+    c.line(card_x + 40, card_y + card_h - 220, card_x + card_w - 40, card_y + card_h - 220)
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 13)
-    c.drawString(85, callout_y + callout_h - 70,
-                 "1. Deterministic Sequential Ingestion: Raw reviews must undergo schema validation prior to tokenisation.")
-    c.drawString(85, callout_y + callout_h - 95,
-                 "2. VADER Raw Context Preservation: Unlike TF-IDF, VADER requires punctuation ('!') and capitalization for intensity scoring.")
-    c.drawString(85, callout_y + callout_h - 120,
-                 "3. Aspect-Polarity Decoupling: Extracting domain features independently allows negative sentiment to isolate specific flaws.")
+    # AFTER Section
+    c.setFont(FONT_BOLD, 13)
+    c.setFillColor(colors.HexColor('#38BDF8'))
+    c.drawString(card_x + 40, card_y + card_h - 255, "A F T E R")
 
-    c.showPage()
+    after_quote = "novel amazing character development pacing make middle chapter bore"
+    draw_multiline(c, card_x + 40, card_y + card_h - 295, after_quote, FONT_BODY, 16, colors.HexColor('#BAE6FD'), 26, card_w - 80)
 
 
 # =========================================================================
-# SLIDE 5: Dual Sentiment Classification (Lexicon vs Supervised ML)
+# SLIDE 5: Three ways to classify sentiment
 # =========================================================================
 def render_slide_5(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "ASTMA Unit II", "Sentiment Classification: Rule-Based VADER vs Supervised ML",
-                      "Production deployment of lexical heuristics benchmarked against TF-IDF Naive Bayes classification.")
+    draw_slide_header(c, "Three ways to classify sentiment")
 
-    cw = 495
-    ch = 390
-    cy = top_y(520)
+    card_w = 318
+    card_h = 420
+    card_y = top_y(540)
+    gap = 28
+    start_x = 70
 
-    # Left: VADER Production Engine
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=CYAN)
+    # Card 1: Lexicon-based (Dark Card)
+    cx1 = start_x
+    draw_card(c, cx1, card_y, card_w, card_h, r=16, bg=C_DARK_CARD, stroke=0)
 
-    draw_badge(c, "PRODUCTION ENGINE", lx + 24, cy + ch - 38, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(lx + 24, cy + ch - 70, "VADER Lexicon & Rule Engine")
+    c.setFont(FONT_TITLE, 22)
+    c.setFillColor(C_WHITE)
+    c.drawString(cx1 + 30, card_y + card_h - 50, "Lexicon-based")
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(lx + 24, cy + ch - 94, "Gold-standard valence dictionary optimized for micro-text and consumer reviews.")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_LIGHT_MUTED)
+    draw_multiline(c, cx1 + 30, card_y + card_h - 95, "Scores words against a pre-rated dictionary.", FONT_BODY, 14, C_TEXT_LIGHT_MUTED, 22, card_w - 60)
 
-    vader_rules = [
-        ("Punctuation Intensity", "Repeated exclamation marks ('Must read!!!') increase polarity weight."),
-        ("Capitalisation Booster", "ALL-CAPS words ('AMAZING worldbuilding') amplify positive valence."),
-        ("Degree Adverb Modifiers", "'deeply touching' boosts score; 'slightly predictable' dampens score."),
-        ("Polarity Flipping Negation", "'not gripping' or 'never connected' inverts positive word polarity."),
-        ("Contrastive 'BUT' Conjunction", "Shifts emotional weight to the trailing clause: 'Pacing was slow, BUT loved it.'")
-    ]
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_PRIMARY_LIGHT)
+    c.drawString(cx1 + 30, card_y + card_h - 180, "Strength: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_WHITE)
+    c.drawString(cx1 + 100, card_y + card_h - 180, "Fast, no training")
+    c.drawString(cx1 + 30, card_y + card_h - 204, "data, explainable")
 
-    vy = cy + ch - 130
-    for r_head, r_desc in vader_rules:
-        c.setFillColor(CYAN)
-        c.circle(lx + 28, vy + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(lx + 38, vy, r_head)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(lx + 38, vy - 15, r_desc)
-        vy -= 44
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(colors.HexColor('#F87171'))
+    c.drawString(cx1 + 30, card_y + card_h - 260, "Limit: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_WHITE)
+    c.drawString(cx1 + 75, card_y + card_h - 260, "Weak on sarcasm and")
+    c.drawString(cx1 + 30, card_y + card_h - 284, "context")
 
-    # Right: Supervised ML Benchmark
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=INDIGO)
+    c.setFont(FONT_BOLD, 15)
+    c.setFillColor(colors.HexColor('#FACC15'))
+    c.drawString(cx1 + 30, card_y + 40, "Used here: VADER")
 
-    draw_badge(c, "ACADEMIC BENCHMARK", rx + 24, cy + ch - 38, colors.HexColor('#242147'), INDIGO, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(rx + 24, cy + ch - 70, "TF-IDF + Multinomial Naive Bayes")
+    # Card 2: Machine learning (Light Card)
+    cx2 = start_x + card_w + gap
+    draw_card(c, cx2, card_y, card_w, card_h, r=16, bg=C_CARD_TINT, border=C_BORDER)
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(rx + 24, cy + ch - 94, "Supervised classification model trained on n-gram frequency matrices.")
+    c.setFont(FONT_TITLE, 22)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(cx2 + 30, card_y + card_h - 50, "Machine learning")
 
-    # Metrics Box
-    mb_y = cy + ch - 195
-    draw_card(c, rx + 24, mb_y, cw - 48, 85, r=8, bg=colors.HexColor('#0c1424'))
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    draw_multiline(c, cx2 + 30, card_y + card_h - 95, "Trains Naive Bayes or SVM on labelled reviews.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
 
-    metrics = [
-        ("Accuracy", "89.2%", EMERALD),
-        ("Precision", "0.884", CYAN),
-        ("Recall", "0.879", INDIGO),
-        ("F1-Score", "0.881", PURPLE)
-    ]
-    for i, (m_name, m_val, m_col) in enumerate(metrics):
-        mx = rx + 36 + i * 110
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(mx, mb_y + 52, m_name)
-        c.setFillColor(m_col)
-        c.setFont(FONT_HEADING, 22)
-        c.drawString(mx, mb_y + 18, m_val)
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_PRIMARY)
+    c.drawString(cx2 + 30, card_y + card_h - 180, "Strength: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(cx2 + 100, card_y + card_h - 180, "Learns domain")
+    c.drawString(cx2 + 30, card_y + card_h - 204, "wording")
 
-    # Qualitative comparison bullets
-    my = mb_y - 35
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_BOLD, 13)
-    c.drawString(rx + 24, my, "Core Trade-off Analysis:")
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_RED_BAR)
+    c.drawString(cx2 + 30, card_y + card_h - 260, "Limit: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(cx2 + 75, card_y + card_h - 260, "Needs labelled data")
 
-    tradeoffs = [
-        ("Explainability", "VADER is 100% white-box; every word delta can be traced in real time."),
-        ("Latency Footprint", "VADER executes in <2ms per review; zero model loading or GPU dependency."),
-        ("Domain Sensitivity", "Supervised ML excels on genre jargon but suffers from out-of-vocabulary drift.")
-    ]
-    ty = my - 26
-    for t_head, t_desc in tradeoffs:
-        c.setFillColor(INDIGO)
-        c.circle(rx + 28, ty + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(rx + 38, ty, t_head)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(rx + 38, ty - 15, t_desc)
-        ty -= 38
+    # Card 3: Deep learning (Light Card)
+    cx3 = start_x + 2 * (card_w + gap)
+    draw_card(c, cx3, card_y, card_w, card_h, r=16, bg=C_CARD_TINT, border=C_BORDER)
 
-    c.showPage()
+    c.setFont(FONT_TITLE, 22)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(cx3 + 30, card_y + card_h - 50, "Deep learning")
+
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    draw_multiline(c, cx3 + 30, card_y + card_h - 95, "Transformers such as BERT learn context.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
+
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_PRIMARY)
+    c.drawString(cx3 + 30, card_y + card_h - 180, "Strength: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(cx3 + 100, card_y + card_h - 180, "Best accuracy on")
+    c.drawString(cx3 + 30, card_y + card_h - 204, "nuance")
+
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_RED_BAR)
+    c.drawString(cx3 + 30, card_y + card_h - 260, "Limit: ")
+    c.setFont(FONT_BODY, 14)
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(cx3 + 75, card_y + card_h - 260, "Heavy compute and")
+    c.drawString(cx3 + 30, card_y + card_h - 284, "data")
 
 
 # =========================================================================
-# SLIDE 6: Fine-Grained Opinion Mining (10 Aspects & RAKE)
+# SLIDE 6: How VADER scores a review
 # =========================================================================
 def render_slide_6(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "ASTMA Unit III", "Aspect-Based Opinion Mining & RAKE Keyphrase Extraction",
-                      "Deconstructing document-level sentiment into 10 literary dimensions with candidate co-occurrence scoring.")
+    draw_slide_header(c, "How VADER scores a review")
 
-    # 10 Aspect Cards Grid (2 rows x 5 cols)
-    aspects = [
-        ("Plot & Story", "Narrative arc, suspense, mystery, storyline"),
-        ("Writing Style", "Prose quality, poetic voice, author craft"),
-        ("Character Dev.", "Protagonist growth, flawed motives, depth"),
-        ("Pacing", "Page-turner tempo, slow middle, dragged chapters"),
-        ("Emotional Depth", "Heartwarming, tear-jerker, vulnerability"),
-        ("Worldbuilding", "Sci-fi lore, fantasy realm, immersion"),
-        ("Dialogue", "Witty banter, realistic conversation, voice"),
-        ("Ending & Climax", "Shocking twist, cliffhanger, resolution"),
-        ("Originality", "Unique premise, trope subversion, fresh ideas"),
-        ("Price & Value", "Paperback quality, audio length, affordability")
+    # Left: 5 heuristics
+    heuristics = [
+        ("1", "Punctuation", "!!! raises intensity"),
+        ("2", "Capitalisation", "GREAT is stronger than great"),
+        ("3", "Degree modifiers", "very, slightly"),
+        ("4", "Negation", "not good flips polarity"),
+        ("5", "Contrast", "but shifts weight to the end"),
     ]
 
-    card_w = 196
-    card_h = 95
-    start_x = 60
-    gap_x = 12
-    gap_y = 12
-    sy = top_y(160)
+    start_y = top_y(190)
+    gap_y = 68
+    for i, (num, tag, desc) in enumerate(heuristics):
+        sy = start_y - i * gap_y
+        draw_circle_badge(c, 90, sy, num, r=18, bg=C_PRIMARY)
 
-    for i, (name, keywords) in enumerate(aspects):
-        col = i % 5
-        row = i // 5
-        cx = start_x + col * (card_w + gap_x)
-        cy = sy - row * (card_h + gap_y)
+        c.setFont(FONT_BOLD, 16)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawString(124, sy - 5, tag)
 
-        draw_card(c, cx, cy, card_w, card_h, r=8, top_accent=PURPLE)
+        tw = c.stringWidth(tag, FONT_BOLD, 16)
+        c.setFont(FONT_BODY, 14)
+        c.setFillColor(C_TEXT_MUTED)
+        c.drawString(124 + tw + 12, sy - 5, desc)
 
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_HEADING, 13)
-        c.drawString(cx + 12, cy + card_h - 24, name)
+    # Right: Compound Score & Color Bar
+    rx = 590
+    rw = 490
 
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(cx + 12, cy + 35, keywords[:24])
-        c.drawString(cx + 12, cy + 20, keywords[24:])
+    c.setFont(FONT_TITLE, 22)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(rx, top_y(180), "Compound score: -1 to +1")
 
-    # Real-World Review Inspector Box Below
-    demo_y = top_y(540)
-    demo_h = 190
-    demo_w = W - 120
-    draw_card(c, 60, demo_y, demo_w, demo_h, r=12, top_accent=CYAN)
+    # 3-segment color bar
+    bar_y = top_y(280)
+    bar_h = 70
+    seg_w = rw / 3.0
 
-    c.setFillColor(CYAN)
-    c.setFont(FONT_BOLD, 11)
-    c.drawString(85, demo_y + demo_h - 30, "LIVE SYSTEM INFERENCE PREVIEW")
+    # Negative Segment (Left)
+    c.setFillColor(C_RED_BAR)
+    c.rect(rx, bar_y, seg_w, bar_h, fill=1, stroke=0)
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_WHITE)
+    c.drawCentredString(rx + seg_w / 2, bar_y + 42, "Negative")
+    c.setFont(FONT_BODY, 12)
+    c.drawCentredString(rx + seg_w / 2, bar_y + 18, "<= -0.05")
 
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 16)
-    c.drawString(85, demo_y + demo_h - 58,
-                 "“The writing style is breathtaking and the emotional depth kept me hooked through chapter ten,")
-    c.drawString(85, demo_y + demo_h - 82,
-                 "however the pacing dragged in the middle and the character development felt rushed.”")
+    # Neutral Segment (Center)
+    c.setFillColor(C_SLATE_BAR)
+    c.rect(rx + seg_w, bar_y, seg_w, bar_h, fill=1, stroke=0)
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_WHITE)
+    c.drawCentredString(rx + seg_w + seg_w / 2, bar_y + 42, "Neutral")
+    c.setFont(FONT_BODY, 12)
+    c.drawCentredString(rx + seg_w + seg_w / 2, bar_y + 18, "in between")
 
-    # Metrics Row
-    my = demo_y + 25
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_BOLD, 12)
-    c.drawString(85, my + 38, "DETECTED ASPECTS:")
-    draw_badge(c, "Writing Style (+0.82)", 230, my + 32, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    draw_badge(c, "Emotional Depth (+0.75)", 390, my + 32, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    draw_badge(c, "Pacing (-0.45)", 570, my + 32, colors.HexColor('#3d1624'), ROSE, font_size=10)
-    draw_badge(c, "Character Dev. (-0.38)", 690, my + 32, colors.HexColor('#3d1624'), ROSE, font_size=10)
+    # Positive Segment (Right)
+    c.setFillColor(C_GREEN)
+    c.rect(rx + 2 * seg_w, bar_y, seg_w, bar_h, fill=1, stroke=0)
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_WHITE)
+    c.drawCentredString(rx + 2 * seg_w + seg_w / 2, bar_y + 42, "Positive")
+    c.setFont(FONT_BODY, 12)
+    c.drawCentredString(rx + 2 * seg_w + seg_w / 2, bar_y + 18, ">= +0.05")
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_BOLD, 12)
-    c.drawString(85, my + 6, "RAKE KEYPHRASES:")
-    draw_badge(c, "Breathtaking Writing Style (9.0)", 230, my, colors.HexColor('#241938'), PURPLE, font_size=10)
-    draw_badge(c, "Rushed Character Development (9.0)", 465, my, colors.HexColor('#241938'), PURPLE, font_size=10)
-    draw_badge(c, "Emotional Depth (4.0)", 730, my, colors.HexColor('#241938'), PURPLE, font_size=10)
+    # Callout card below
+    call_y = top_y(490)
+    call_h = 175
+    draw_card(c, rx, call_y, rw, call_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
 
-    c.showPage()
+    call_text = "The output also includes pos, neu and neg proportions. Your code classifies using only the compound value."
+    draw_multiline(c, rx + 30, call_y + call_h - 55, call_text, FONT_BODY, 15, C_TEXT_BODY, 26, rw - 60)
 
 
 # =========================================================================
-# SLIDE 7: Unsupervised Discovery (K-Means Clustering & Apriori Rules)
+# SLIDE 7: Opinion mining: what is the review about? (Book Aspects)
 # =========================================================================
 def render_slide_7(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "ASTMA Unit IV", "Unsupervised Machine Learning & Latent Theme Mining",
-                      "K-Means TF-IDF vector clustering ($K=4$) and market-basket Apriori association rule discovery.")
+    draw_slide_header(
+        c,
+        "Opinion mining: what is the review about?",
+        "A keyword dictionary maps each aspect to indicator words, matched with word-boundary regex. Simple, fast and explainable."
+    )
 
-    cw = 495
-    ch = 390
-    cy = top_y(520)
+    # 10 Book Aspect pills (2 rows of 5)
+    row1 = ["plot", "characters", "pacing", "writing style", "ending"]
+    row2 = ["world building", "emotion", "theme", "cover design", "price"]
 
-    # Left: K-Means Clustering
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=CYAN)
+    pill_w = 175
+    pill_h = 44
+    gap = 26
+    start_x = 75
 
-    draw_badge(c, "UNSUPERVISED CLUSTERING", lx + 24, cy + ch - 38, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 20)
-    c.drawString(lx + 24, cy + ch - 70, "K-Means Latent Theme Discovery")
+    # Row 1
+    y1 = top_y(240)
+    for i, tag in enumerate(row1):
+        px = start_x + i * (pill_w + gap)
+        c.saveState()
+        c.setFillColor(C_WHITE)
+        c.setStrokeColor(C_PRIMARY)
+        c.setLineWidth(1.5)
+        c.roundRect(px, y1, pill_w, pill_h, pill_h / 2.0, fill=1, stroke=1)
+        c.setFont(FONT_BOLD, 14)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawCentredString(px + pill_w / 2, y1 + 14, tag)
+        c.restoreState()
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(lx + 24, cy + ch - 94, "Discovers natural semantic groupings without supervision (K=4 in TF-IDF space).")
+    # Row 2
+    y2 = top_y(305)
+    for i, tag in enumerate(row2):
+        px = start_x + i * (pill_w + gap)
+        c.saveState()
+        c.setFillColor(C_WHITE)
+        c.setStrokeColor(C_PRIMARY)
+        c.setLineWidth(1.5)
+        c.roundRect(px, y2, pill_w, pill_h, pill_h / 2.0, fill=1, stroke=1)
+        c.setFont(FONT_BOLD, 14)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawCentredString(px + pill_w / 2, y2 + 14, tag)
+        c.restoreState()
 
-    clusters = [
-        ("Cluster 1: Cosmic Sci-Fi & Worldbuilding", "77.4% of corpus • 'science, fiction, atmospheric, universe'"),
-        ("Cluster 2: Emotional Drama & Resonance", "9.7% of corpus • 'pacing, tone, vulnerability, touching'"),
-        ("Cluster 3: Behavioral Science & Habit", "8.9% of corpus • 'prose, habits, mindset, behavioral, daily'"),
-        ("Cluster 4: Psychological Suspense & Thriller", "4.0% of corpus • 'mystery, twist, psychological, climax'")
-    ]
+    # Dark Container Card below
+    card_x = 75
+    card_w = W - 150
+    card_h = 185
+    card_y = top_y(540)
+    draw_card(c, card_x, card_y, card_w, card_h, r=16, bg=C_DARK_CARD, stroke=0)
 
-    ky = cy + ch - 135
-    for c_title, c_desc in clusters:
-        draw_card(c, lx + 20, ky - 36, cw - 40, 52, r=6, bg=colors.HexColor('#0c1424'))
-        c.setFillColor(CYAN)
-        c.circle(lx + 35, ky - 10, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(lx + 46, ky - 7, c_title)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(lx + 46, ky - 24, c_desc)
-        ky -= 62
+    # Left: REVIEW
+    c.setFont(FONT_BOLD, 13)
+    c.setFillColor(colors.HexColor('#94A3B8'))
+    c.drawString(card_x + 40, card_y + card_h - 45, "R E V I E W")
 
-    # Right: Apriori Association Rules
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=PURPLE)
+    rev_quote = "The novel has amazing character development but the pacing was slow and the ending was rushed."
+    draw_multiline(c, card_x + 40, card_y + card_h - 85, rev_quote, FONT_BODY, 16, C_WHITE, 26, 480)
 
-    draw_badge(c, "ASSOCIATION MINING", rx + 24, cy + ch - 38, colors.HexColor('#241938'), PURPLE, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 20)
-    c.drawString(rx + 24, cy + ch - 70, "Apriori Co-occurrence Rules")
+    # Right: ASPECTS DETECTED
+    c.setFont(FONT_BOLD, 13)
+    c.setFillColor(colors.HexColor('#94A3B8'))
+    c.drawString(card_x + 560, card_y + card_h - 45, "A S P E C T S   D E T E C T E D")
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(rx + 24, cy + ch - 94, "Identifies high-confidence aspect relationships: Antecedent → Consequent.")
-
-    rules = [
-        ("Emotional Depth → Writing Style", "Support: 31.5% • Confidence: 82.4% • Lift: 1.45"),
-        ("Pacing Friction → Ending Disappointment", "Support: 18.2% • Confidence: 74.1% • Lift: 1.88"),
-        ("Worldbuilding → Originality Acclaim", "Support: 24.6% • Confidence: 89.0% • Lift: 1.62"),
-        ("Price Critique → Negative CSAT", "Support: 14.3% • Confidence: 91.2% • Lift: 2.14")
-    ]
-
-    ry_item = cy + ch - 135
-    for r_title, r_desc in rules:
-        draw_card(c, rx + 20, ry_item - 36, cw - 40, 52, r=6, bg=colors.HexColor('#0c1424'))
-        c.setFillColor(PURPLE)
-        c.circle(rx + 35, ry_item - 10, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(rx + 46, ry_item - 7, r_title)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(rx + 46, ry_item - 24, r_desc)
-        ry_item -= 62
-
-    c.showPage()
+    c.setFont(FONT_BODY, 16)
+    c.setFillColor(colors.HexColor('#38BDF8'))
+    c.drawString(card_x + 560, card_y + card_h - 85, "characters, pacing, ending")
 
 
 # =========================================================================
-# SLIDE 8: Enterprise Systems: RBAC & ERP Materials Management
+# SLIDE 8: Enterprise system architecture (Books domain)
 # =========================================================================
 def render_slide_8(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Enterprise Systems", "Role-Based Access Control & Master Data Management",
-                      "Operational enterprise integrity separating administrative moderation from customer interactions.")
+    draw_slide_header(c, "Enterprise system architecture")
 
-    # Two Main Cards
-    cw = 495
-    ch = 390
-    cy = top_y(520)
+    # Left: 3 Tier layers
+    lx = 75
+    lw = 480
 
-    # Left: RBAC Model
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=INDIGO)
+    # Layer 1: Presentation (Dark Card)
+    y1 = top_y(260)
+    draw_card(c, lx, y1, lw, 95, r=14, bg=C_DARK_CARD, stroke=0)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_WHITE)
+    c.drawString(lx + 28, y1 + 55, "Presentation layer")
+    c.setFont(FONT_BODY, 13)
+    c.setFillColor(C_TEXT_LIGHT_MUTED)
+    c.drawString(lx + 28, y1 + 25, "server.py & static web dashboard (HTML/CSS/JS)")
 
-    draw_badge(c, "SECURITY ARCHITECTURE", lx + 24, cy + ch - 38, colors.HexColor('#1a1e3d'), INDIGO, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(lx + 24, cy + ch - 70, "RBAC Security & Audit Trails")
+    # Layer 2: Business logic (Royal Blue Card)
+    y2 = top_y(385)
+    draw_card(c, lx, y2, lw, 95, r=14, bg=C_PRIMARY, stroke=0)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_WHITE)
+    c.drawString(lx + 28, y2 + 55, "Business logic layer")
+    c.setFont(FONT_BODY, 13)
+    c.setFillColor(colors.HexColor('#DBEAFE'))
+    c.drawString(lx + 28, y2 + 25, "sentiment_analysis.py, opinion_mining.py")
 
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(lx + 24, cy + ch - 94, "Enforces strict authorization boundaries with transactional audit logging.")
+    # Layer 3: Data layer (Light Card)
+    y3 = top_y(510)
+    draw_card(c, lx, y3, lw, 95, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(lx + 28, y3 + 55, "Data layer")
+    c.setFont(FONT_BODY, 13)
+    c.setFillColor(C_TEXT_MUTED)
+    c.drawString(lx + 28, y3 + 25, "SQLite: books, users and reviews tables")
 
-    # Role comparison
-    draw_card(c, lx + 20, cy + 140, cw - 40, 100, r=8, bg=colors.HexColor('#0c1424'))
-    draw_badge(c, "ADMIN ROLE", lx + 36, cy + 210, colors.HexColor('#2c163b'), PURPLE, font_size=9)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_BOLD, 12)
-    c.drawString(lx + 120, cy + 214, "Product registration, delete reviews, ITPM plan view")
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 11)
-    c.drawString(lx + 36, cy + 188, "• Access to PERT crashing tools, Scrum boards, and ERP TCO projections.")
-    c.drawString(lx + 36, cy + 168, "• Review moderation authority and direct database deletion rights.")
+    # Right: What makes it an enterprise system
+    rx = 620
+    rw = 450
+    c.setFont(FONT_TITLE, 24)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(rx, top_y(205), "What makes it an enterprise")
+    c.drawString(rx, top_y(240), "system")
 
-    draw_card(c, lx + 20, cy + 25, cw - 40, 100, r=8, bg=colors.HexColor('#0c1424'))
-    draw_badge(c, "CUSTOMER ROLE", lx + 36, cy + 95, colors.HexColor('#162b29'), EMERALD, font_size=9)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_BOLD, 12)
-    c.drawString(lx + 145, cy + 99, "Catalog browsing, review submission, live NLP feedback")
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 11)
-    c.drawString(lx + 36, cy + 73, "• Live NLP feedback typing card (instant VADER score & RAKE tags).")
-    c.drawString(lx + 36, cy + 53, "• Read-only access to community reviews and individual book metrics.")
-
-    # Right: ERP Materials Catalog
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=EMERALD)
-
-    draw_badge(c, "ERP MATERIALS MODULE", rx + 24, cy + ch - 38, colors.HexColor('#142b26'), EMERALD, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(rx + 24, cy + ch - 70, "Master Catalog & Data Models")
-
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(rx + 24, cy + ch - 94, "Enterprise Materials Master: 36 verified books spanning 35 genres.")
-
-    cat_specs = [
-        ("Entity Integrity", "Foreign key constraints link reviews to verified book IDs and user IDs."),
-        ("B-Tree Optimization", "Indexed queries on genre, rating, and sentiment execute in <5ms."),
-        ("Audit Trail Ledger", "Every login, submission, and moderation writes to audit_logs table."),
-        ("Batch ETL Capabilities", "Paginated streaming handles 100k+ reviews without memory exhaustion.")
+    bullets = [
+        "Integrates data and processes on one shared platform",
+        "Supports CRUD on books and reader reviews",
+        "Turns stored data into decision support",
     ]
 
-    ey = cy + ch - 130
-    for e_head, e_desc in cat_specs:
-        c.setFillColor(EMERALD)
-        c.circle(rx + 28, ey + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 13)
-        c.drawString(rx + 38, ey, e_head)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(rx + 38, ey - 16, e_desc)
-        ey -= 56
+    by = top_y(300)
+    for b in bullets:
+        c.setFont(FONT_BOLD, 18)
+        c.setFillColor(C_PRIMARY)
+        c.drawString(rx, by, "•")
 
-    c.showPage()
+        draw_multiline(c, rx + 24, by, b, FONT_BODY, 15, C_TEXT_BODY, 24, rw - 30)
+        by -= 68
 
 
 # =========================================================================
-# SLIDE 9: ERP 5-Year Total Cost of Ownership (TCO Model)
+# SLIDE 9: Data layer and business intelligence (Books domain)
 # =========================================================================
 def render_slide_9(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Enterprise Systems", "5-Year Total Cost of Ownership (TCO): COTS vs Bespoke",
-                      "Evaluating economic trade-offs between commercial SaaS packages and custom FastAPI NLP architecture.")
+    draw_slide_header(c, "Data layer and business intelligence")
 
-    # Top Comparative Cards
-    cw = 495
-    ch = 180
-    cy = top_y(290)
+    card_w = 480
+    card_h = 165
+    gap_x = 40
 
-    # COTS Box
-    draw_card(c, 60, cy, cw, ch, r=12, top_accent=ROSE)
-    draw_badge(c, "COMMERCIAL OFF-THE-SHELF (COTS)", 85, cy + ch - 35, colors.HexColor('#3d1624'), ROSE, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 22)
-    c.drawString(85, cy + ch - 68, "5-Year Cumulative: ₹1,85,000")
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(85, cy + 60, "• High recurring SaaS license fees per seat per year.")
-    c.drawString(85, cy + 40, "• Rigid customization lock-in; cannot tune internal NLP algorithms.")
-    c.drawString(85, cy + 20, "• Expensive third-party connector fees for external CRM/ERP sync.")
+    x1 = 75
+    x2 = x1 + card_w + gap_x
+    y_row1 = top_y(330)
+    y_row2 = top_y(530)
 
-    # Bespoke Box
-    draw_card(c, 595, cy, cw, ch, r=12, top_accent=EMERALD)
-    draw_badge(c, "SENTILINK BESPOKE BUILD (CHOSEN)", 620, cy + ch - 35, colors.HexColor('#142b26'), EMERALD, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 22)
-    c.drawString(620, cy + ch - 68, "5-Year Cumulative: ₹82,000 (56% Savings)")
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(620, cy + 60, "• Upfront CapEx of ₹55,000 with nominal annual cloud hosting (₹6,000/yr).")
-    c.drawString(620, cy + 40, "• Complete ownership of NLP intellectual property and fine-tuning rules.")
-    c.drawString(620, cy + 20, "• Breakeven achieved by Month 14 of commercial deployment.")
+    # 1. Relational database
+    draw_card(c, x1, y_row1, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x1 + 38, y_row1 + card_h - 38, "1", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x1 + 68, y_row1 + card_h - 44, "Relational database")
+    draw_multiline(c, x1 + 30, y_row1 + card_h - 82, "Books and reviews tables with CRUD operations in SQLite.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
 
-    # 5-Year Projection Table Below
-    tbl_y = top_y(540)
-    tbl_h = 220
-    tbl_w = W - 120
-    draw_card(c, 60, tbl_y, tbl_w, tbl_h, r=12, top_accent=INDIGO)
+    # 2. Indexing
+    draw_card(c, x2, y_row1, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x2 + 38, y_row1 + card_h - 38, "2", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x2 + 68, y_row1 + card_h - 44, "Indexing")
+    draw_multiline(c, x2 + 30, y_row1 + card_h - 82, "Indexes on sentiment, genre, rating, and book title speed up filters.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
 
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 17)
-    c.drawString(85, tbl_y + tbl_h - 32, "Cumulative Cost Projection Table (₹ INR)")
+    # 3. Chunked processing
+    draw_card(c, x1, y_row2, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x1 + 38, y_row2 + card_h - 38, "3", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x1 + 68, y_row2 + card_h - 44, "Chunked processing")
+    draw_multiline(c, x1 + 30, y_row2 + card_h - 82, "Reviews load in batches so entire corpus fits in memory efficiently.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
 
-    # Table Header
-    headers = ["Cost Category", "Year 1 (Capex)", "Year 2", "Year 3", "Year 4", "Year 5", "5-Yr Total"]
-    col_w = [260, 115, 115, 115, 115, 115, 145]
-    th_y = tbl_y + tbl_h - 65
-
-    c.setFillColor(colors.HexColor('#1a263d'))
-    c.rect(80, th_y, tbl_w - 40, 24, fill=1, stroke=0)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_BOLD, 11)
-    tx = 90
-    for h_txt, w in zip(headers, col_w):
-        c.drawString(tx, th_y + 6, h_txt)
-        tx += w
-
-    # Rows
-    rows_data = [
-        ("COTS SaaS Package (e.g. Brand24 / Sprinklr)", "₹45,000", "₹35,000", "₹35,000", "₹35,000", "₹35,000", "₹1,85,000", ROSE),
-        ("Sentilink Bespoke Architecture (Built)", "₹55,000", "₹6,000", "₹7,000", "₹7,000", "₹7,000", "₹82,000", EMERALD),
-        ("Net Enterprise Cost Benefit (Savings)", "- ₹10,000", "+ ₹29,000", "+ ₹28,000", "+ ₹28,000", "+ ₹28,000", "+ ₹1,03,000", CYAN)
-    ]
-
-    ry_pos = th_y - 28
-    for r_title, y1, y2, y3, y4, y5, tot, c_col in rows_data:
-        c.setFillColor(TEXT_WHITE if c_col != CYAN else CYAN)
-        c.setFont(FONT_BOLD if c_col != TEXT_MUTED else FONT_REGULAR, 11)
-        tx = 90
-        c.drawString(tx, ry_pos, r_title)
-        tx += col_w[0]
-        for val in [y1, y2, y3, y4, y5]:
-            c.drawString(tx, ry_pos, val)
-            tx += col_w[1]
-        c.setFillColor(c_col)
-        c.drawString(tx, ry_pos, tot)
-        ry_pos -= 26
-
-    c.showPage()
+    # 4. BI dashboard
+    draw_card(c, x2, y_row2, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x2 + 38, y_row2 + card_h - 38, "4", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 20)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x2 + 68, y_row2 + card_h - 44, "BI dashboard")
+    draw_multiline(c, x2 + 30, y_row2 + card_h - 82, "KPIs, distributions and aspect charts, cached for 5 minutes.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
 
 
 # =========================================================================
-# SLIDE 10: IT Project Management: WBS & 16-Week Schedule
+# SLIDE 10: IT project management
 # =========================================================================
 def render_slide_10(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "IT Project Management", "Work Breakdown Structure (WBS) & 16-Week Schedule",
-                      "Structured project delivery decomposing capstone scope into 5 work packages and 15 trackable activities.")
+    draw_slide_header(c, "IT project management")
 
-    cw = 495
-    ch = 390
-    cy = top_y(520)
-
-    # Left: WBS Hierarchy
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=EMERALD)
-
-    draw_badge(c, "WBS SCOPE HIERARCHY", lx + 24, cy + ch - 38, colors.HexColor('#142b26'), EMERALD, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 20)
-    c.drawString(lx + 24, cy + ch - 70, "Work Breakdown Structure")
-
-    wbs_pkgs = [
-        ("WP 1.0: Initiation & Architecture", "Scope charter, literature survey, 3-tier MVC blueprint"),
-        ("WP 2.0: Data Ingestion & Storage", "SQLite schema design, Kaggle ETL pipeline, data cleaning"),
-        ("WP 3.0: Core NLP Engineering", "VADER rule adaptation, RAKE extractor, K-Means clustering"),
-        ("WP 4.0: Dashboard & Web UI", "Chart.js analytics, role toggles, live typing inference card"),
-        ("WP 5.0: QA, Testing & Deployment", "Unit test suites, syllabus report generation, UAT sign-off")
+    # Left: 6 numbered steps
+    items = [
+        ("1", "WBS", "Break the project into work packages"),
+        ("2", "Schedule", "16 weeks with a Gantt-style view"),
+        ("3", "Milestones", "Eight checkpoints, week 1 to 16"),
+        ("4", "Resources", "Roles allocated by percentage"),
+        ("5", "Cost", "Bottom-up budget estimate"),
+        ("6", "Risk", "Rate, then mitigate"),
     ]
 
-    wy = cy + ch - 120
-    for wp_name, wp_desc in wbs_pkgs:
-        draw_card(c, lx + 20, wy - 32, cw - 40, 48, r=6, bg=colors.HexColor('#0c1424'))
-        c.setFillColor(EMERALD)
-        c.circle(lx + 35, wy - 8, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(lx + 46, wy - 5, wp_name)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(lx + 46, wy - 22, wp_desc)
-        wy -= 56
+    start_y = top_y(190)
+    gap_y = 56
+    for i, (num, tag, desc) in enumerate(items):
+        sy = start_y - i * gap_y
+        draw_circle_badge(c, 85, sy, num, r=16, bg=C_PRIMARY)
 
-    # Right: 16-Week Schedule & Milestones
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=CYAN)
+        c.setFont(FONT_BOLD, 15)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawString(116, sy - 5, tag)
 
-    draw_badge(c, "TIMELINE & STAGE-GATES", rx + 24, cy + ch - 38, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 20)
-    c.drawString(rx + 24, cy + ch - 70, "16-Week Delivery Lifecycle")
+        tw = c.stringWidth(tag, FONT_BOLD, 15)
+        c.setFont(FONT_BODY, 13)
+        c.setFillColor(C_TEXT_MUTED)
+        c.drawString(116 + tw + 10, sy - 5, desc)
 
-    milestones = [
-        ("M1 (Week 2): Project Charter Signed", "Scope baseline approved by academic mentors"),
-        ("M2 (Week 5): Database Schema Live", "Books and reviews tables populated with seed data"),
-        ("M3 (Week 8): NLP Algorithm Alpha", "VADER compound & RAKE keyphrase engine operational"),
-        ("M4 (Week 11): REST API Interoperability", "FastAPI Swagger endpoints fully integrated with UI"),
-        ("M5 (Week 13): Advanced Analytics Lab", "K-Means clusters, Apriori rules & social graphs live"),
-        ("M6 (Week 16): Final Defense & Handoff", "Full code repository, documentation & live demonstration")
-    ]
+    # Right: Horizontal bar chart
+    rx = 560
 
-    my = cy + ch - 115
-    for m_title, m_desc in milestones:
-        c.setFillColor(CYAN)
-        c.circle(rx + 28, my + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(rx + 38, my, m_title)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(rx + 38, my - 14, m_desc)
-        my -= 44
-
-    c.showPage()
-
-
-# =========================================================================
-# SLIDE 11: ITPM CPM/PERT Critical Path & Activity Crashing
-# =========================================================================
-def render_slide_11(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "IT Project Management", "CPM / PERT Critical Path & Activity Crashing Analysis",
-                      "Three-time probabilistic estimation ($T_e$) identifying project bottlenecks and optimal crashing slopes.")
-
-    # Two Cards
-    cw = 495
-    ch = 390
-    cy = top_y(520)
-
-    # Left: PERT Formula & Critical Path
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=CYAN)
-
-    draw_badge(c, "PROBABILISTIC NETWORK", lx + 24, cy + ch - 38, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(lx + 24, cy + ch - 70, "PERT Expected Time Formula")
-
-    # Formula Box
-    f_box_y = cy + ch - 160
-    draw_card(c, lx + 24, f_box_y, cw - 48, 75, r=8, bg=colors.HexColor('#0c1424'))
-    c.setFillColor(CYAN_GLOW)
-    c.setFont(FONT_HEADING, 18)
-    c.drawCentredString(lx + cw / 2.0, f_box_y + 42, "T_e = (a + 4m + b) / 6")
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 11)
-    c.drawCentredString(lx + cw / 2.0, f_box_y + 18, "a = Optimistic Time • m = Most Likely Time • b = Pessimistic Time")
-
-    # Critical Path Callout
-    cp_y = f_box_y - 80
-    c.setFillColor(TEXT_WHITE)
     c.setFont(FONT_BOLD, 14)
-    c.drawString(lx + 24, cp_y + 50, "Critical Path Identification:")
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(rx + 90, top_y(175), "Cost estimate by component (INR)")
 
-    c.setFillColor(ROSE)
-    c.setFont(FONT_HEADING, 17)
-    c.drawString(lx + 24, cp_y + 24, "A  →  C  →  F  →  G  →  H  (16.0 Weeks)")
-
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(lx + 24, cp_y - 2, "• Zero float activities; any delay in these directly delays project completion.")
-    c.drawString(lx + 24, cp_y - 20, "• Total Project Variance: σ² = 1.34 weeks (Std Dev: 1.16 weeks).")
-    c.drawString(lx + 24, cp_y - 38, "• 95% Confidence Interval for completion: 14.8 to 17.2 weeks.")
-
-    # Right: Activity Crashing Analysis
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=ROSE)
-
-    draw_badge(c, "SCHEDULE OPTIMIZATION", rx + 24, cy + ch - 38, colors.HexColor('#3d1624'), ROSE, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(rx + 24, cy + ch - 70, "Crashing Cost Slope Analysis")
-
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(rx + 24, cy + ch - 94, "Crash Cost Slope = (Crash Cost - Normal Cost) / (Normal Time - Crash Time)")
-
-    crash_data = [
-        ("Task C: NLP Pipeline Dev.", "Normal: 4 wks → Crash: 3 wks", "Slope: ₹2,000/wk", "Priority 1 Crash candidate"),
-        ("Task F: Dashboard Visuals", "Normal: 3 wks → Crash: 2 wks", "Slope: ₹2,500/wk", "Priority 2 Crash candidate"),
-        ("Task G: Integration QA", "Normal: 2 wks → Crash: 1 wk", "Slope: ₹3,000/wk", "Priority 3 Crash candidate"),
-        ("Task H: Final UAT Sign-off", "Normal: 2 wks → Crash: 1.5 wks", "Slope: ₹4,000/wk", "High cost; avoid crashing")
+    bars = [
+        ("Software Development", 25000, "25,000"),
+        ("Database & Cloud", 10000, "10,000"),
+        ("Testing", 8000, "8,000"),
+        ("Miscellaneous", 7000, "7,000"),
+        ("Documentation", 5000, "5,000"),
     ]
 
-    cry = cy + ch - 135
-    for t_name, t_times, t_slope, t_prio in crash_data:
-        draw_card(c, rx + 20, cry - 38, cw - 40, 52, r=6, bg=colors.HexColor('#0c1424'))
-        c.setFillColor(ROSE)
-        c.circle(rx + 35, cry - 10, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(rx + 46, cry - 7, t_name)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(rx + 46, cry - 24, f"{t_times}  •  {t_slope}  ({t_prio})")
-        cry -= 62
+    by = top_y(235)
+    bar_max_val = 28000
+    bar_max_w = 210
 
-    c.showPage()
+    for name, val, val_str in bars:
+        # Category label
+        c.setFont(FONT_BODY, 13)
+        c.setFillColor(C_TEXT_BODY)
+        c.drawRightString(rx + 155, by + 4, name)
 
+        # Grey axis separator line
+        c.setStrokeColor(colors.HexColor('#CBD5E1'))
+        c.setLineWidth(1)
+        c.line(rx + 165, by - 12, rx + 165, by + 24)
 
-# =========================================================================
-# SLIDE 12: ITPM Budget Allocation & Risk Governance Matrix
-# =========================================================================
-def render_slide_12(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "IT Project Management", "Budget Breakdown (₹55,000 Cap) & Risk Register",
-                      "Bottom-up cost accounting and quantitative risk management with proactive mitigation protocols.")
+        # Bar
+        bw = (val / bar_max_val) * bar_max_w
+        c.setFillColor(C_PRIMARY)
+        c.rect(rx + 166, by, bw, 22, fill=1, stroke=0)
 
-    cw = 495
-    ch = 390
-    cy = top_y(520)
-
-    # Left: Budget Allocation Chart
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=EMERALD)
-
-    draw_badge(c, "FINANCIAL GOVERNANCE", lx + 24, cy + ch - 38, colors.HexColor('#142b26'), EMERALD, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(lx + 24, cy + ch - 70, "₹55,000 Bottom-Up Budget")
-
-    c.setFillColor(TEXT_MUTED)
-    c.setFont(FONT_REGULAR, 12)
-    c.drawString(lx + 24, cy + ch - 94, "Strict capital expenditure cap verified against deliverable heads:")
-
-    cost_heads = [
-        ("Software Engineering & Architecture", 25000, "45.5%", EMERALD),
-        ("Cloud Infrastructure & DB Storage", 10000, "18.2%", CYAN),
-        ("Quality Assurance & Benchmark QA", 8000, "14.5%", INDIGO),
-        ("Miscellaneous & Contingency Buffer", 7000, "12.7%", AMBER),
-        ("Technical Documentation & Reports", 5000, "9.1%", PURPLE)
-    ]
-
-    by = cy + ch - 130
-    for name, amt, pct, col in cost_heads:
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(lx + 24, by, name)
-
-        c.setFillColor(col)
-        c.drawRightString(lx + cw - 24, by, f"₹{amt:,} ({pct})")
-
-        # Visual progress bar
-        draw_card(c, lx + 24, by - 16, cw - 48, 8, r=4, bg=colors.HexColor('#0c1424'))
-        bar_fill = ((amt) / 25000.0) * (cw - 48)
-        c.setFillColor(col)
-        c.roundRect(lx + 24, by - 16, bar_fill, 8, 4, fill=1, stroke=0)
+        # Value label
+        c.setFont(FONT_BODY, 13)
+        c.setFillColor(C_TEXT_DARK)
+        c.drawString(rx + 166 + bw + 10, by + 4, val_str)
 
         by -= 48
 
-    # Right: Risk Register Table
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=ROSE)
+    # Total Cost Callout
+    tot_y = top_y(540)
+    c.setFont(FONT_BOLD, 36)
+    c.setFillColor(C_PRIMARY)
+    c.drawString(rx + 10, tot_y, "Rs. 55,000")
 
-    draw_badge(c, "RISK MITIGATION", rx + 24, cy + ch - 38, colors.HexColor('#3d1624'), ROSE, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(rx + 24, cy + ch - 70, "Risk Governance Register")
-
-    risks = [
-        ("Review Noise & Spam", "Med", "High", "Automated regex cleaning & duplicate token pruning"),
-        ("VADER Sarcasm Misses", "Med", "Med", "Dual Naive Bayes fallback & compound threshold tuning"),
-        ("Database Data Drift", "Low", "High", "Daily automated SQLite snapshots & foreign key constraints"),
-        ("Schedule Overrun", "Med", "High", "CPM/PERT critical path tracking & crash candidate C"),
-        ("API Contract Mismatch", "Med", "Med", "Pydantic V2 schema validation & Swagger documentation")
-    ]
-
-    ry = cy + ch - 120
-    for r_name, prob, imp, mit in risks:
-        draw_card(c, rx + 20, ry - 36, cw - 40, 52, r=6, bg=colors.HexColor('#0c1424'))
-        c.setFillColor(ROSE if imp == "High" else AMBER)
-        c.circle(rx + 35, ry - 10, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(rx + 46, ry - 7, r_name)
-        c.setFillColor(ROSE if imp == "High" else AMBER)
-        c.setFont(FONT_BOLD, 10)
-        c.drawRightString(rx + cw - 35, ry - 7, f"P:{prob} | I:{imp}")
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(rx + 46, ry - 24, mit)
-        ry -= 60
-
-    c.showPage()
+    tw = c.stringWidth("Rs. 55,000", FONT_BOLD, 36)
+    c.setFont(FONT_BODY, 15)
+    c.setFillColor(C_TEXT_BODY)
+    c.drawString(rx + 10 + tw + 12, tot_y + 4, "total estimated cost")
 
 
 # =========================================================================
-# SLIDE 13: Live System Verification & Academic Compliance Matrix
+# SLIDE 11: Risk register
+# =========================================================================
+def render_slide_11(c):
+    draw_slide_header(c, "Risk register")
+
+    # Clean Table
+    tx = 75
+    ty = top_y(530)
+    tw = W - 150
+    th = 380
+
+    col_widths = [300, 110, 110, 482]
+    headers = ["Risk", "Probability", "Impact", "Mitigation"]
+
+    rows = [
+        ("Poor review data quality", "Medium", "High", "Clean and validate review data"),
+        ("Incorrect sentiment classification", "Medium", "Medium", "Test NLP model with sample reviews"),
+        ("Database failure", "Low", "High", "Maintain database backup"),
+        ("Project schedule delay", "Medium", "High", "Track schedule and milestones"),
+        ("Integration problems", "Medium", "Medium", "Test modules independently first"),
+        ("Insufficient testing", "Low", "Medium", "Prepare test cases"),
+    ]
+
+    # Header Row
+    c.setFillColor(C_DARK_CARD)
+    c.rect(tx, ty + th - 48, tw, 48, fill=1, stroke=0)
+
+    c.setFont(FONT_BOLD, 14)
+    c.setFillColor(C_WHITE)
+    cur_x = tx + 20
+    for j, h_text in enumerate(headers):
+        c.drawString(cur_x, ty + th - 32, h_text)
+        cur_x += col_widths[j]
+
+    # Data Rows
+    row_h = 52
+    for i, row in enumerate(rows):
+        ry = ty + th - 48 - (i + 1) * row_h
+
+        # Alternating background
+        if i % 2 == 1:
+            c.setFillColor(colors.HexColor('#F8FAFC'))
+            c.rect(tx, ry, tw, row_h, fill=1, stroke=0)
+
+        # Thin border bottom
+        c.setStrokeColor(C_BORDER)
+        c.setLineWidth(0.8)
+        c.line(tx, ry, tx + tw, ry)
+
+        # Row Text
+        cur_x = tx + 20
+        c.setFont(FONT_BODY, 13)
+        c.setFillColor(C_TEXT_BODY)
+        for j, cell in enumerate(row):
+            if j == 0:
+                c.setFont(FONT_BOLD, 13)
+                c.setFillColor(C_TEXT_DARK)
+            else:
+                c.setFont(FONT_BODY, 13)
+                c.setFillColor(C_TEXT_BODY)
+
+            c.drawString(cur_x, ry + 18, cell)
+            cur_x += col_widths[j]
+
+
+# =========================================================================
+# SLIDE 12: Limitations to acknowledge
+# =========================================================================
+def render_slide_12(c):
+    draw_slide_header(c, "Limitations to acknowledge")
+
+    card_w = 480
+    card_h = 165
+    gap_x = 40
+
+    x1 = 75
+    x2 = x1 + card_w + gap_x
+    y_row1 = top_y(330)
+    y_row2 = top_y(530)
+
+    # 1. Preprocessing clashes with VADER
+    draw_card(c, x1, y_row1, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x1 + 38, y_row1 + card_h - 38, "1", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 19)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x1 + 68, y_row1 + card_h - 35, "Preprocessing clashes with")
+    c.drawString(x1 + 68, y_row1 + card_h - 58, "VADER")
+    draw_multiline(c, x1 + 30, y_row1 + card_h - 96, "Removing stopwords and punctuation strips negation and emphasis cues.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
+
+    # 2. Document-level sentiment
+    draw_card(c, x2, y_row1, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x2 + 38, y_row1 + card_h - 38, "2", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 19)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x2 + 68, y_row1 + card_h - 44, "Document-level sentiment")
+    draw_multiline(c, x2 + 30, y_row1 + card_h - 85, "One score per review, so aspects are detected but not scored separately.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
+
+    # 3. Keyword matching
+    draw_card(c, x1, y_row2, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x1 + 38, y_row2 + card_h - 38, "3", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 19)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x1 + 68, y_row2 + card_h - 44, "Keyword matching")
+    draw_multiline(c, x1 + 30, y_row2 + card_h - 85, "Misses synonyms and context; a word like good fits many aspects.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
+
+    # 4. No ground truth check
+    draw_card(c, x2, y_row2, card_w, card_h, r=14, bg=C_CARD_TINT, border=C_BORDER)
+    draw_circle_badge(c, x2 + 38, y_row2 + card_h - 38, "4", r=16, bg=C_PRIMARY)
+    c.setFont(FONT_TITLE, 19)
+    c.setFillColor(C_TEXT_DARK)
+    c.drawString(x2 + 68, y_row2 + card_h - 44, "No ground truth check")
+    draw_multiline(c, x2 + 30, y_row2 + card_h - 85, "Labels are not yet compared with star ratings.", FONT_BODY, 14, C_TEXT_BODY, 22, card_w - 60)
+
+
+# =========================================================================
+# SLIDE 13: Conclusion and future work
 # =========================================================================
 def render_slide_13(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Verification & Results", "System Verification & Academic Syllabus Compliance",
-                      "100% formal compliance across all required BVDU CSBS syllabus units and live operational metrics.")
+    c.saveState()
+    # Dark Canvas
+    c.setFillColor(C_DARK_BG)
+    c.rect(0, 0, W, H, fill=1, stroke=0)
 
-    # 4 Metric Cards Across
-    stat_w = 235
-    stat_gap = 28
-    start_x = 60
-    top_stat_y = top_y(220)
+    # Title
+    c.setFont(FONT_TITLE, 40)
+    c.setFillColor(C_WHITE)
+    c.drawString(75, top_y(100), "Conclusion and future work")
 
-    stats = [
-        ("< 10 ms", "API Latency SLA", "FastAPI Asynchronous Engine", CYAN),
-        ("89.2%", "Supervised Accuracy", "TF-IDF + Naive Bayes Benchmark", INDIGO),
-        ("10 / 10", "Aspect Coverage", "Complete Domain Literary Reach", PURPLE),
-        ("₹0 Cost Drift", "Budget Variance", "Exact ₹55,000 Cap Maintained", EMERALD)
+    col_w = 460
+    col_y = top_y(200)
+
+    # Column 1: What we built
+    c.setFont(FONT_TITLE, 24)
+    c.setFillColor(C_PRIMARY_LIGHT)
+    c.drawString(75, col_y, "What we built")
+
+    built_bullets = [
+        "End-to-end pipeline from raw reviews to dashboard",
+        "VADER sentiment plus aspect detection",
+        "Enterprise data layer for books and reviews",
+        "Planned and tracked with ITPM tools",
     ]
 
-    for i, (val, title, sub, col) in enumerate(stats):
-        sx = start_x + i * (stat_w + stat_gap)
-        draw_card(c, sx, top_stat_y, stat_w, 95, r=10, top_accent=col)
+    by = col_y - 45
+    for b in built_bullets:
+        c.setFont(FONT_BOLD, 18)
+        c.setFillColor(C_WHITE)
+        c.drawString(75, by, "•")
 
-        c.setFillColor(col)
-        c.setFont(FONT_HEADING, 22)
-        c.drawString(sx + 16, top_stat_y + 55, val)
+        draw_multiline(c, 100, by, b, FONT_BODY, 16, C_WHITE, 26, col_w - 30)
+        by -= 68
 
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(sx + 16, top_stat_y + 34, title)
+    # Column 2: Next steps
+    cx2 = 600
+    c.setFont(FONT_TITLE, 24)
+    c.setFillColor(C_PRIMARY_LIGHT)
+    c.drawString(cx2, col_y, "Next steps")
 
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 9)
-        c.drawString(sx + 16, top_stat_y + 16, sub)
-
-    # Compliance Matrix Table Below
-    tbl_y = top_y(540)
-    tbl_h = 300
-    tbl_w = W - 120
-    draw_card(c, 60, tbl_y, tbl_w, tbl_h, r=12, top_accent=CYAN)
-
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 18)
-    c.drawString(85, tbl_y + tbl_h - 35, "BVDU DET CSBS Academic Syllabus Compliance Matrix")
-
-    headers = ["Subject", "Syllabus Unit / Concept", "Practical System Implementation", "Verification Status"]
-    col_w = [140, 260, 430, 150]
-    th_y = tbl_y + tbl_h - 68
-
-    c.setFillColor(colors.HexColor('#1a263d'))
-    c.rect(80, th_y, tbl_w - 40, 24, fill=1, stroke=0)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_BOLD, 11)
-    tx = 90
-    for h_txt, w in zip(headers, col_w):
-        c.drawString(tx, th_y + 6, h_txt)
-        tx += w
-
-    matrix_rows = [
-        ("ASTMA", "Unit I: Text Preprocessing", "Noise stripping, tokenisation, stopwords, lemmatisation pipeline", "Verified (100%)", EMERALD),
-        ("ASTMA", "Unit II: Sentiment Analysis", "VADER rule heuristics + supervised TF-IDF Naive Bayes benchmark", "Verified (100%)", EMERALD),
-        ("ASTMA", "Unit III: Keyphrase Extraction", "RAKE word degree to frequency co-occurrence matrix", "Verified (100%)", EMERALD),
-        ("ASTMA", "Unit IV: Unsupervised Topics", "K-Means TF-IDF space clustering (K=4) & Apriori association rules", "Verified (100%)", EMERALD),
-        ("Enterprise Systems", "Unit I-II: 3-Tier MVC Architecture", "FastAPI SOA REST gateway + Vanilla JS UI + SQLite persistence", "Verified (100%)", EMERALD),
-        ("Enterprise Systems", "Unit III-IV: RBAC & TCO", "Admin vs Customer role segregation & 5-Year COTS vs Bespoke model", "Verified (100%)", EMERALD),
-        ("IT Project Mgmt", "Units I-VI: Project Controls", "WBS, 16-Wk Plan, ₹55k Cost, Risk Register, CPM/PERT Crashing", "Verified (100%)", EMERALD)
+    next_bullets = [
+        "Aspect-based sentiment analysis (ABSA)",
+        "Transformer models such as BERT",
+        "Evaluate with precision, recall and F1",
+        "Skip heavy cleaning before VADER",
     ]
 
-    ry_pos = th_y - 26
-    for subj, concept, impl, status, col in matrix_rows:
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 10)
-        tx = 90
-        c.drawString(tx, ry_pos, subj)
-        tx += col_w[0]
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(tx, ry_pos, concept)
-        tx += col_w[1]
-        c.drawString(tx, ry_pos, impl)
-        tx += col_w[2]
-        c.setFillColor(col)
-        c.setFont(FONT_BOLD, 10)
-        c.drawString(tx, ry_pos, status)
-        ry_pos -= 26
+    by2 = col_y - 45
+    for b in next_bullets:
+        c.setFont(FONT_BOLD, 18)
+        c.setFillColor(C_WHITE)
+        c.drawString(cx2, by2, "•")
 
-    c.showPage()
+        draw_multiline(c, cx2 + 25, by2, b, FONT_BODY, 16, C_WHITE, 26, col_w - 30)
+        by2 -= 68
+
+    c.restoreState()
 
 
 # =========================================================================
-# SLIDE 14: Conclusion & Future Research Roadmap
+# MASTER GENERATION FUNCTION
 # =========================================================================
-def render_slide_14(c):
-    draw_tech_background(c)
-    draw_slide_header(c, "Conclusion & Roadmap", "Project Achievements & Next-Generation Research Directions",
-                      "Summary of engineering milestones achieved and future technological enhancements for 2026-2027.")
+def generate_deck(output_filename="Sentilink_Book_Review_Presentation.pdf"):
+    print(f"Generating clean, pedagogical presentation deck: {output_filename} ...")
+    c = canvas.Canvas(output_filename, pagesize=(W, H))
 
-    cw = 495
-    ch = 390
-    cy = top_y(520)
-
-    # Left: What We Built & Delivered
-    lx = 60
-    draw_card(c, lx, cy, cw, ch, r=12, top_accent=EMERALD)
-
-    draw_badge(c, "DELIVERED VALUE", lx + 24, cy + ch - 38, colors.HexColor('#142b26'), EMERALD, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(lx + 24, cy + ch - 70, "Engineering Deliverables")
-
-    delivered = [
-        ("Full-Stack Enterprise Web Application", "Production-grade 3-Tier MVC with FastAPI REST backend and responsive Chart.js dashboard."),
-        ("Multi-Method NLP Opinion Engine", "Real-time VADER valence scoring, RAKE keyphrase mining, and 10 literary aspect detectors."),
-        ("Unsupervised Knowledge Discovery", "K-Means semantic topic discovery (K=4), Apriori association rules, and reader bipartite graphs."),
-        ("Rigorous ITPM Governance Framework", "On-time 16-week delivery, probabilistic PERT critical path, and exact ₹55,000 budget adherence.")
+    renderers = [
+        render_slide_1,
+        render_slide_2,
+        render_slide_3,
+        render_slide_4,
+        render_slide_5,
+        render_slide_6,
+        render_slide_7,
+        render_slide_8,
+        render_slide_9,
+        render_slide_10,
+        render_slide_11,
+        render_slide_12,
+        render_slide_13,
     ]
 
-    dy = cy + ch - 120
-    for d_title, d_desc in delivered:
-        c.setFillColor(EMERALD)
-        c.circle(lx + 28, dy + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 13)
-        c.drawString(lx + 38, dy, d_title)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(lx + 38, dy - 16, d_desc[:52])
-        c.drawString(lx + 38, dy - 30, d_desc[52:])
-        dy -= 60
-
-    # Right: Future Research Roadmap
-    rx = 595
-    draw_card(c, rx, cy, cw, ch, r=12, top_accent=CYAN)
-
-    draw_badge(c, "FUTURE HORIZON", rx + 24, cy + ch - 38, colors.HexColor('#162b3d'), CYAN, font_size=10)
-    c.setFillColor(TEXT_WHITE)
-    c.setFont(FONT_HEADING, 21)
-    c.drawString(rx + 24, cy + ch - 70, "Next-Gen Research Roadmap")
-
-    roadmap = [
-        ("Fine-Tuned Transformer Models", "Deploy domain-specific Book-BERT or RoBERTa microservices for literary subtext and irony."),
-        ("Sentence-Level ABSA", "Syntactic dependency parsing to isolate multi-aspect polarities within complex compound sentences."),
-        ("Vector Embeddings & Semantic Search", "Vector database integration (FAISS / ChromaDB) for semantic recommendation search."),
-        ("PostgreSQL Enterprise Clustering", "Scale from SQLite to distributed multi-master database clusters with read replicas.")
-    ]
-
-    ry = cy + ch - 120
-    for r_title, r_desc in roadmap:
-        c.setFillColor(CYAN)
-        c.circle(rx + 28, ry + 3, 3, fill=1, stroke=0)
-        c.setFillColor(TEXT_WHITE)
-        c.setFont(FONT_BOLD, 13)
-        c.drawString(rx + 38, ry, r_title)
-        c.setFillColor(TEXT_MUTED)
-        c.setFont(FONT_REGULAR, 11)
-        c.drawString(rx + 38, ry - 16, r_desc[:52])
-        c.drawString(rx + 38, ry - 30, r_desc[52:])
-        ry -= 60
-
-    c.showPage()
-
-
-def build_deck(filename="Sentilink_Book_Review_Presentation.pdf"):
-    c = canvas.Canvas(filename, pagesize=(W, H))
-
-    render_slide_1(c)
-    render_slide_2(c)
-    render_slide_3(c)
-    render_slide_4(c)
-    render_slide_5(c)
-    render_slide_6(c)
-    render_slide_7(c)
-    render_slide_8(c)
-    render_slide_9(c)
-    render_slide_10(c)
-    render_slide_11(c)
-    render_slide_12(c)
-    render_slide_13(c)
-    render_slide_14(c)
+    for i, renderer in enumerate(renderers, 1):
+        renderer(c)
+        c.showPage()
+        print(f"Rendered slide {i}/13.")
 
     c.save()
-    print(f"Successfully generated custom executive keynote: {filename} ({os.path.getsize(filename):,} bytes)")
+    print(f"Presentation successfully saved to {output_filename} ({os.path.getsize(output_filename):,} bytes).")
 
 
-if __name__ == '__main__':
-    build_deck()
+if __name__ == "__main__":
+    generate_deck()
